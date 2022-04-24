@@ -13,10 +13,6 @@ public class DerExpNode implements Node {
         this.id = id;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n" + "DerExpNode" + this.id.Analyze();
-    }
 
     @Override
     public Node typeCheck() {

@@ -13,16 +13,6 @@ public class ReturnNode implements Node{
         this.exp = exp;
     }
 
-
-    @Override
-    public String Analyze() {
-        String res = "\n" + "Return";
-        if(this.exp != null)
-            return res + exp.Analyze();
-        else
-            return res;
-    }
-
     @Override
     public Node typeCheck() {
         return null;

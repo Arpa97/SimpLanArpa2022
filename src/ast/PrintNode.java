@@ -14,10 +14,6 @@ public class PrintNode implements Node{
         this.exp = exp;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n" + "Print" + exp.Analyze();
-    }
 
     @Override
     public Node typeCheck() {

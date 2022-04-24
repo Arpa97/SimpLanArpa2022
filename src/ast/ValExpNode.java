@@ -15,10 +15,6 @@ public class ValExpNode implements Node {
     }
 
 
-    @Override
-    public String Analyze() {
-        return "\n" + "ValueExpNode "+this.value;
-    }
 
     @Override
     public Node typeCheck() {

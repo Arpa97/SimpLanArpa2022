@@ -22,18 +22,7 @@ public class IteNode implements Node{
         this.then_statement = then_statement;
     }
 
-    @Override
-    public String Analyze() {
-        String res = "\n" + "ITE ";
-        res += "\n"+ " Condition " + exp.Analyze();
-        res += "\n" + " Then " + then_statement.Analyze();
 
-        if(else_statement != null){
-            res += "\n" + " Else " + else_statement.Analyze();
-        }
-
-        return res;
-    }
     @Override
     public Node typeCheck() {
         return null;

@@ -19,12 +19,6 @@ public class CallNode implements Node{
         this.id = id;
     }
 
-
-    @Override
-    public String Analyze() {
-        return "\n" + "DerExpNode" + this.id.Analyze();
-    }
-
     @Override
     public Node typeCheck() {
         return null;

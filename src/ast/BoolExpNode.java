@@ -13,10 +13,7 @@ public class BoolExpNode implements Node {
     public BoolExpNode(boolean bool){
         this.bool = bool;
     }
-    @Override
-    public String Analyze() {
-        return "\n" + "Bool " + bool;
-    }
+
     @Override
     public Node typeCheck() {
         return null;

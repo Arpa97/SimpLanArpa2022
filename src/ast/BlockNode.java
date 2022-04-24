@@ -19,21 +19,7 @@ public class BlockNode implements Node {
         this.declarations = declarations;
         this.statements = statements;
     }
-    @Override
-    public String Analyze() {
-        String res = "";
-        if (this.declarations != null) {
-            for (Node dec : declarations) {
-                res += dec.Analyze();
-            }
-        }
-        if (this.statements != null) {
-            for (Node dec : statements) {
-                res += dec.Analyze();
-            }
-        }
-        return "\n" + "Block" + res;
-    }
+
     @Override
     public Node typeCheck() {
         return null;

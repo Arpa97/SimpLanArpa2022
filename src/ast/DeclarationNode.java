@@ -13,10 +13,6 @@ public class DeclarationNode implements Node{
         this.dec = dec;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n"+dec.Analyze();
-    }
 
     @Override
     public Node typeCheck() {

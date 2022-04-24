@@ -17,10 +17,6 @@ public class AssignmentNode implements Node{
         }
 
         @Override
-        public String Analyze() {
-            return "\n" + "Assignment " + id.Analyze() + " = " + exp.Analyze();
-        }
-        @Override
         public Node typeCheck() {
             return null;
         }

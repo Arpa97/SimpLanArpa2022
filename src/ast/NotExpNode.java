@@ -5,8 +5,4 @@ public class NotExpNode extends BaseExpNode{
         super(exp);
     }
 
-    @Override
-    public String Analyze() {
-        return "\n"+"NotExpNode "+this.exp.Analyze();
-    }
 }

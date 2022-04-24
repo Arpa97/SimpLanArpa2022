@@ -25,21 +25,7 @@ public class ProgramNode implements Node{
         return null;
     }
 
-    @Override
-    public String Analyze() {
-        String res = "";
-        if (this.declarations != null) {
-            for (Node dec : declarations) {
-                res += dec.Analyze();
-            }
-        }
-        if (this.statements != null) {
-            for (Node dec : statements) {
-                res += dec.Analyze();
-            }
-        }
-        return "\n" + "Program" + res;
-    }
+
 
     @Override
     public ArrayList<SemanticError> checkSemantics(Environment env) {

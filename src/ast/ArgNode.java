@@ -16,10 +16,7 @@ public class ArgNode implements Node {
             this.id = id;
             this.isVar = isVar;
         }
-        @Override
-        public String Analyze() {
-            return "\n"+"Arg"+this.type.Analyze()+this.id.Analyze();
-        }
+
         @Override
         public Node typeCheck() {
             return null;

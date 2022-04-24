@@ -15,10 +15,7 @@ public class BinExpNode implements Node {
         this.left = left;
         this.right = right;
     }
-    @Override
-    public String Analyze() {
-        return "\n"+"BinExp "+this.op+this.left.Analyze()+this.right.Analyze();
-    }
+
     @Override
     public Node typeCheck() {
         return null;

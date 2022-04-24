@@ -19,11 +19,6 @@ public class TypeNode implements Node{
 
 
     @Override
-    public String Analyze() {
-        return "\n"+"Type "+this.type;
-    }
-
-    @Override
     public Node typeCheck() {
         return null;
     }
