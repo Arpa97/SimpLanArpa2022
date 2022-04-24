@@ -27,10 +27,10 @@ import java.util.ArrayList;
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            err_list.add("ERROR FOUND AT LINE "+line+" AT POSITION "+charPositionInLine);
+            err_list.add("ERROR FOUND AT LINE "+line+" AT POSITION "+charPositionInLine+ "\n"+ msg);
             try{
                 writer=new BufferedWriter(new FileWriter(filename,true));
-                writer.write("ERROR FOUND AT LINE "+line+" AT POSITION "+charPositionInLine +"\n");
+                writer.write("ERROR FOUND AT LINE "+line+" AT POSITION "+charPositionInLine +"\n"+ msg +"\n");
                 close();
             } catch (IOException ex) {
                 ex.printStackTrace();
