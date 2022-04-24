@@ -1,0 +1,12 @@
+{
+int k(){
+    return 2;
+}
+
+void main(){
+    int k;
+    z=2;
+}
+}
+
+
