@@ -21,7 +21,7 @@ public class StatementNode implements Node {
 
     @Override
     public Node typeCheck() {
-        return null;
+        return statement.typeCheck(); //ste
     }
 
     @Override

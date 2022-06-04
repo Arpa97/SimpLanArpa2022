@@ -13,6 +13,12 @@ public class BoolExpNode implements Node {
     public BoolExpNode(boolean bool){
         this.bool = bool;
     }
+    
+    public String toPrint(String s){
+        if(bool) return s + "Boolean: true";
+        else return s + "Boolean: false";
+    }
+    
     @Override
     public String Analyze() {
         return "\n" + "Bool " + bool;

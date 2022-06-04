@@ -27,7 +27,7 @@ public class ArgNode implements Node {
 
         @Override
         public String codeGeneration() {
-            return null;
+            return "";
         }
 
         @Override

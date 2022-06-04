@@ -1,11 +1,11 @@
 {
-int k(){
-    return 2;
+int k(int c){
+ c=2;
+ return c;
 }
-
-void main(){
-    int k;
-    z=2;
+int k(int c){
+ c=2;
+ return c;
 }
 }
 

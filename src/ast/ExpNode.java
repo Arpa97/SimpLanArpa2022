@@ -20,12 +20,12 @@ public class ExpNode implements Node {
 
     @Override
     public Node typeCheck() {
-        return null;
+        return exp.typeCheck(); //ste
     }
 
     @Override
     public String codeGeneration() {
-        return null;
+        return exp.codeGeneration(); //ste
     }
 
     @Override

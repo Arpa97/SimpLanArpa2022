@@ -2,6 +2,7 @@ package ast;
 
 import util.Environment;
 import util.SemanticError;
+import util.SimpLanPlusLib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,15 @@ public class AssignmentNode implements Node{
         }
         @Override
         public Node typeCheck() {
-            return null;
+            Node idType = id.typeCheck();
+            Node expType = exp.typeCheck();
+            
+            if(!SimpLanPlusLib.isSubtype(expType, idType)){
+                System.out.println("Assignment Error: Assignment type failed");
+                System.exit(0);
+            }
+            
+            return new TypeNode("void");
         }
 
         @Override

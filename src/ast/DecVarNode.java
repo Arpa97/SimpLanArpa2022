@@ -1,7 +1,9 @@
 package ast;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import util.Environment;
 import util.SemanticError;
+import util.SimpLanPlusLib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +13,8 @@ public class DecVarNode implements Node{
     private TypeNode type;
     private IdNode id;
     private Node exp;
+    private STentry entry;
+    //private Offset offset;
 
     public DecVarNode(TypeNode type, IdNode id, Node exp){
         this.type = type;
@@ -34,7 +38,13 @@ public class DecVarNode implements Node{
 
     @Override
     public Node typeCheck() {
-        return null;
+        if(exp != null){
+            if(!(SimpLanPlusLib.isSubtype(type, exp.typeCheck()))){
+                System.out.println("Variable Declaration Error: incompatible value for variable " + id);
+                System.exit(0);
+            }
+        }
+        return new TypeNode("void");
     }
 
     @Override

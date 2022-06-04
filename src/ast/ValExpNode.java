@@ -22,12 +22,12 @@ public class ValExpNode implements Node {
 
     @Override
     public Node typeCheck() {
-        return null;
+        return new IntTypeNode();
     }
 
     @Override
     public String codeGeneration() {
-        return null;
+        return "lir1"+value+"\n"; //li r1 val   s->[]
     }
 
     @Override

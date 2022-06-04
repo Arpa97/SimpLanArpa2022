@@ -25,12 +25,12 @@ public class TypeNode implements Node{
 
     @Override
     public Node typeCheck() {
-        return null;
+        return this;
     }
 
     @Override
     public String codeGeneration() {
-        return null;
+        return "";
     }
 
     @Override
