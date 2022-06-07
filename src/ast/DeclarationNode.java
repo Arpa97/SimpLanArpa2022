@@ -34,4 +34,9 @@ public class DeclarationNode implements Node{
         }
         return this.dec.checkSemantics(env);
     }
+
+    @Override
+    public String Analyze() {
+        return null;
+    }
 }

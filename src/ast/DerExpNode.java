@@ -43,4 +43,9 @@ public class DerExpNode implements Node {
             res.add(new SemanticError("Variable "+this.id.getId()+" not declared"));
         return res;
     }
+
+    @Override
+    public String Analyze() {
+        return "DerExpNode: " + this.id.Analyze();
+    }
 }

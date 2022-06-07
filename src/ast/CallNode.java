@@ -59,7 +59,16 @@ public class CallNode implements Node{
 
     @Override
     public String Analyze() {
-        return "\n" + "DerExpNode" + this.id.Analyze();
+        //return "\n" + "DerExpNode" + this.id.Analyze();
+        String first = "CallNode" + id + "(";
+        String last = ")" + "";
+        String exp = "";
+        
+        for(Node expNode : this.exp){
+            exp += expNode.Analyze()+" ";
+        }
+        String nestingLevel = ":: nesting level" + this.nlevel;
+        return first + exp + last + nestingLevel;
     }
 
     @Override

@@ -27,7 +27,8 @@ public class AssignmentNode implements Node{
                 System.exit(0);
             }
             
-            return new TypeNode("void");
+            //faccio tornare un null perchè al prof non piace il tipo di ritorno void
+            return null;
         }
 
         @Override
@@ -55,4 +56,9 @@ public class AssignmentNode implements Node{
 
             return res;
         }
+
+    @Override
+    public String Analyze() {
+        return "AsgnNode: " + this.id.Analyze() + " = " + this.exp.Analyze();
+    }
 }

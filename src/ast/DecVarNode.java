@@ -10,19 +10,19 @@ import java.util.HashMap;
 
 public class DecVarNode implements Node{
 
-    private TypeNode type;
+    private Node type;
     private IdNode id;
     private Node exp;
     private STentry entry;
     //private Offset offset;
 
-    public DecVarNode(TypeNode type, IdNode id, Node exp){
+    public DecVarNode(Node type, IdNode id, Node exp){
         this.type = type;
         this.id = id;
         this.exp = exp;
     }
 
-    public DecVarNode(TypeNode type, IdNode id){
+    public DecVarNode(Node type, IdNode id){
         this.type = type;
         this.id = id;
     }
@@ -32,16 +32,24 @@ public class DecVarNode implements Node{
     public Node typeCheck() {
         if(exp != null){
             if(!(SimpLanPlusLib.isSubtype(type, exp.typeCheck()))){
+                System.out.println("Type id: " + type + ", Exp Type: " + exp.typeCheck());
                 System.out.println("Variable Declaration Error: incompatible value for variable " + id);
                 System.exit(0);
             }
         }
-        return new TypeNode("void");
+        return null;
     }
 
     @Override
     public String codeGeneration() {
-        return null;
+        if (this.exp != null){
+            //se c'è assegnamento lo si memorizza all'indirizzo dell'offset corrispondente
+            return exp.codeGeneration() +  // r1 = cgen(stable, exp)
+                    "swfp " + entry.getOffset() + "\n";  //sw r1 -> entry.offset($fp)
+        }
+        
+        //se exp è null
+        return "";
     }
 
     @Override
@@ -55,5 +63,10 @@ public class DecVarNode implements Node{
             res.addAll(this.exp.checkSemantics(env));
         }
         return res;
+    }
+
+    @Override
+    public String Analyze() {
+        return null;
     }
 }

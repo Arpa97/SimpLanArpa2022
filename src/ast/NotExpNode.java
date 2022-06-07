@@ -12,7 +12,7 @@ public class NotExpNode extends BaseExpNode{
 
     @Override
     public String Analyze() {
-        return "\n"+"NotExpNode "+this.exp.Analyze();
+        return "NotExpNode: !"+this.exp.Analyze() + "\n";
     }
 
     @Override

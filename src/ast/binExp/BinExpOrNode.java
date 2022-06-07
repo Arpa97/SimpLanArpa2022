@@ -33,6 +33,23 @@ public class BinExpOrNode implements Node {
 
     @Override
     public String codeGeneration() {
+        //farò una codegen basica anche se quella del compito era più difficile con dei label
+        /*
+            cgen(stable, e1 && e2) =
+                true_branch = new_label();
+                end_if = new_label();
+                cgen(s, e1)
+                $t1 <- true
+                push $a0
+                beq $a0 $t1 true branch //caso true or (qualcos'altro) va direttamente a true
+                cgen(s, e2)
+                beq $a0 $t1 true branch //caso false (perchè non passa prima) or true del secondo elemento
+                //caso false or false
+                b endif
+           true_branch: pop
+           end_if: pop
+        
+         */
         return right.codeGeneration()+
                 "lr1\n"+
                 left.codeGeneration()+

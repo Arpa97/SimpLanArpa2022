@@ -41,13 +41,13 @@ public class BinExpEqNode implements Node {
         push $a0
         cgen(s, e1)
         $t1 <- top
-        beq $a0 $t1 true_branch:
+        beq $a0 $t1 true_branch
         //case false
         push 0
+        b end_if
         
-        true_branch:
-        push 1
-        b true_branch
+        true_branch: push 1
+        end_if:
          */
         
         String true_branch = SimpLanPlusLib.freshFunLabel();
@@ -66,11 +66,19 @@ public class BinExpEqNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(Environment env) {
-        return null;
+
+        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
+        if(this.left!=null) {
+            res.addAll(left.checkSemantics(env));
+        }
+        if(this.right!=null) {
+            res.addAll(right.checkSemantics(env));
+        }
+        return res;
     }
 
     @Override
     public String Analyze() {
-        return "\n"+"BinEqExp: "+this.left.Analyze()+ this.op + this.right.Analyze(); // left + == + right
+        return "BinEqExp: "+this.left.Analyze()+ this.op + this.right.Analyze() + "\n"; // left + == + right
     }
 }

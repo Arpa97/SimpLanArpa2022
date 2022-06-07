@@ -65,4 +65,46 @@ public class DecFunNode implements Node {
         env.symTable.remove(env.nestingLevel--);
         return res;
     }
+
+    @Override
+    public String Analyze() {
+        if(this.type != null){
+            if(args.size() == 0){
+                //non ha argomenti, stampiano solo il tipo di ritorno
+                
+                return "DecFun: " + this.type.Analyze() + this.id.Analyze()+ "( )" + block.Analyze() + "\n";
+            }
+            else{
+                //andiamo a mettere gli argomenti che prende in input la funzione
+                String first = "DecFun: " + this.type.Analyze() + this.id + "(";
+                String last = ")" + block.Analyze()+"\n";
+                String argsToPrint = this.args.get(0).Analyze();
+                for(int i = 1; i < this.args.size(); i++){
+                    argsToPrint += "," + this.args.get(i).Analyze();
+                }
+
+                return first + argsToPrint + last;
+                
+            }
+            
+        }
+        else{
+            //tipo void quindi non ritorna niente
+            if(args.size() == 0){
+                //caso in cui non ha argomenti
+                return "DecFun: void + " + this.id + "( )" + block.Analyze() + "\n";
+            }
+            else{
+                //andiamo a mettere gli argomenti che prende in input la funzione
+                String first = "DecFun: void " + id + "(";
+                String last = ")" + block.Analyze()+"\n";
+                String argsToPrint = this.args.get(0).Analyze();
+                for(int i = 1; i < this.args.size(); i++){
+                    argsToPrint += "," + this.args.get(i).Analyze(); 
+                }
+                
+                return first + argsToPrint + last;
+            }
+        }
+    }
 }

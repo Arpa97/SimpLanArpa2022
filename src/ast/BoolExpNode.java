@@ -15,13 +15,15 @@ public class BoolExpNode implements Node {
     }
     
     public String toPrint(String s){
-        if(bool) return s + "Boolean: true";
-        else return s + "Boolean: false";
+        if(bool) return s + "Boolean: true\n";
+        else return s + "Boolean: false\n";
     }
     
     @Override
     public String Analyze() {
-        return "\n" + "Bool " + bool;
+        //return "\n" + "BoolExpNode: " + bool;
+        if(bool) return "Boolean: true\n";
+        else return "Boolean: false\n";
     }
     @Override
     public Node typeCheck() {

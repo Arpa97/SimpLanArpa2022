@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class IntTypeNode implements Node {
 
-    private String s;
     public IntTypeNode() {
     }
 
@@ -28,6 +27,6 @@ public class IntTypeNode implements Node {
 
     @Override
     public String Analyze() {
-        return s + "IntType\n";
+        return "IntType\n";
     }
 }

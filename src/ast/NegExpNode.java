@@ -11,7 +11,7 @@ public class NegExpNode extends BaseExpNode{
     }
     @Override
     public String Analyze() {
-        return "\n"+"negExpNode"+this.exp.Analyze();
+        return "negExpNode: -"+this.exp.Analyze() + "\n";
     }
 
     @Override

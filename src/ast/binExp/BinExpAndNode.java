@@ -37,14 +37,16 @@ public class BinExpAndNode implements Node {
         /*
             cgen(stable, e1 && e2) =
                 false_branch = new_label();
+                end_if = new_label();
                 cgen(s, e1)
                 $t1 <- false
                 push $a0
                 beq $a0 $t1 false branch
                 cgen(s, e2)
                 beq $a0 $t1 false branch
+                b end_label
            false_branch: pop
-           b false_branch
+           b end_label: pop
         
          */
         
@@ -69,6 +71,6 @@ public class BinExpAndNode implements Node {
 
     @Override
     public String Analyze() {
-        return "\n"+"BinAndExp: "+this.left.Analyze()+ this.op + this.right.Analyze(); // left + && + right
+        return "BinAndExp: "+this.left.Analyze()+ this.op + this.right.Analyze() + "\n"; // left + && + right
     }
 }

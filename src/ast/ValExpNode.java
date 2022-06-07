@@ -30,4 +30,9 @@ public class ValExpNode implements Node {
     public ArrayList<SemanticError> checkSemantics(Environment env) {
         return new ArrayList<SemanticError>();
     }
+
+    @Override
+    public String Analyze() {
+        return null;
+    }
 }

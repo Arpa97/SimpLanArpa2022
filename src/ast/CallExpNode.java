@@ -27,4 +27,9 @@ public class CallExpNode implements Node {
     public ArrayList<SemanticError> checkSemantics(Environment env) {
         return call.checkSemantics(env);
     }
+
+    @Override
+    public String Analyze() {
+        return "CallExpNode: " + this.call.Analyze() + "\n";
+    }
 }

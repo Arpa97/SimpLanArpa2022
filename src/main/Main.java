@@ -69,6 +69,14 @@ public class Main {
             return;
         }
         System.out.println("Semantic is Correct");
+        System.out.println("-----------------");
+        
+        //TYPE CHECKING
+        System.out.println("Starting Type Checking: \n");
+        Node type = ast.typeCheck();
+        System.out.println("Types of the program after type checking are in the following list:\n");
+        System.out.println(type.Analyze());
+        
         return;
     }
 

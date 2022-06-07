@@ -13,7 +13,7 @@ public class BoolTypeNode implements Node{
     
     @Override
     public Node typeCheck() {
-        return this;
+        return null;
     }
 
     @Override

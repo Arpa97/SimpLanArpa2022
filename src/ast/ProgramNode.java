@@ -15,6 +15,37 @@ public class ProgramNode implements Node{
         this.statements = statements;
     }
 
+    public Boolean checkRetValue(){
+        boolean hasRetValue = false;
+        boolean hasElse = false;
+
+        for (int i = 0; i < statements.size(); i++){
+            StatementNode stm = (StatementNode) statements.get(i);
+            if(stm.getStatement() instanceof IteNode){
+                hasRetValue = ((IteNode) stm.getStatement()).isCheckRetValueIte();
+                //caso in cui esista anche l'else statement
+                if( ((IteNode) stm.getStatement()).getElse_statement() != null ){
+                    hasElse = true;
+                }
+            }
+            //se ha UN tipo di ritorno
+            if(stm.getCheckRet()){
+                if(hasRetValue && hasElse) {
+                    System.out.println("Block Error: Multiple return conflicts with iteration statement");
+                    System.exit(0);
+                }
+                //caso in cui si abbiano più tipi di ritorno nello stesso blocco
+                if(i !=statements.size() - 1){
+                    System.out.println("Block Error: Multiple return");
+                    System.exit(0);
+                } else return true;
+            }
+        }
+
+        return hasRetValue;
+
+    }
+
     @Override
     public Node typeCheck() {
         ArrayList<Node> baseTypeNode = new ArrayList<Node>();
@@ -87,7 +118,15 @@ public class ProgramNode implements Node{
 
     @Override
     public String Analyze() {
-        return null;
+        String out ="";
+        for (Node dec:declarations)
+            out += dec.Analyze() ;
+
+        for (Node st:statements)
+            out += st.Analyze();
+
+
+        return "BlockNode:" + out + "\n" ;
     }
 
     public ArrayList<SemanticError> checkSemanticsFunction(Environment env) {

@@ -8,11 +8,17 @@ import util.SimpLanPlusLib;
 
 import java.util.ArrayList;
 
-public class BinExpGreatNode implements Node {
+public class BinExpGreatEqNode implements Node {
 
     private Node left;
     private Node right;
     private String op;
+
+    public BinExpGreatEqNode(Node left, Node right, String op) {
+        this.left = left;
+        this.right = right;
+        this.op = op;
+    }
 
     @Override
     public Node typeCheck() {
@@ -27,31 +33,22 @@ public class BinExpGreatNode implements Node {
 
     @Override
     public String codeGeneration() {
-        /*
-        cgen(s, e2)
-        push $a0
-        cgen(s, e1)
-        $t1 <- top //ha il valore di e2
-        beq $a0 $t1 true_branch:
-        //case false
-        push 0
         
-        true_branch:
-        push 1
-        b true_branch
-         */
-
-        String true_branch = SimpLanPlusLib.freshFunLabel();
-        String end_if = SimpLanPlusLib.freshFunLabel();
-        return right.codeGeneration() +
+        //bleq $r1 $r2      salta al label se r1 <= r2
+        //caso nostro left >= right         left = r2, right = r1
+        String true_branch = SimpLanPlusLib.freshLabel();
+        String end_if = SimpLanPlusLib.freshLabel();
+        
+        
+        return left.codeGeneration() + 
                 "lr1\n" +
-                left.codeGeneration() +
-                "sr2\n" +
-                "beq " + true_branch + "\n" +
-                "lir1 0\n" +
+                right.codeGeneration() +
+                "sr2\n" +                   //r2 = left, r1 = right
+                "bleq " + true_branch + "\n" +
+                "lir1 0\n" +                  //caso falso, r1<-0
                 "b" + end_if + "\n" +
                 true_branch + ":\n" +
-                "lir1 1\n" +
+                "lir1 1\n" +                 //caso true, r1<-1
                 end_if + ":\n";
     }
 
@@ -69,12 +66,6 @@ public class BinExpGreatNode implements Node {
 
     @Override
     public String Analyze() {
-        return null;
-    }
-
-    public BinExpGreatNode(Node left, Node right, String op) {
-        this.left = left;
-        this.right = right;
-        this.op = op;
+        return "BinExpGreatEqExp: " +this.left.Analyze()+ this.op + this.right.Analyze() + "\n"; // left + >= + right
     }
 }

@@ -33,4 +33,11 @@ public class STentry {
         return nl;
     }
 
+    public String Analyze() { //
+        return "STentry: nestlev " + Integer.toString(nl) +"\n"+
+                "STentry: type\n" +
+                type.Analyze() +
+                "STentry: offset " + Integer.toString(offset) + "\n";
+    }
+
 }

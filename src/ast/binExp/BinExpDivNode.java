@@ -55,6 +55,6 @@ public class BinExpDivNode implements Node{
 
     @Override
     public String Analyze() {
-        return "\n"+"BinDivExp: "+this.left.Analyze()+ this.op + this.right.Analyze(); // left + / + right
+        return "BinDivExp: " +this.left.Analyze()+ this.op + this.right.Analyze() + "\n"; // left + / + right
     }
 }

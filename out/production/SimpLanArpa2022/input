@@ -1,12 +1,6 @@
 {
-int k(int c){
- c=2;
- return c;
+int k = 2;
 }
-int k(int c){
- c=2;
- return c;
-}
-}
+
 
 
