@@ -13,12 +13,6 @@ public class StatementNode implements Node {
         this.statement = statement;
     }
 
-
-    @Override
-    public String Analyze() {
-        return "\n"  + "Statement" + statement.Analyze();
-    }
-
     @Override
     public Node typeCheck() {
         return statement.typeCheck(); //ste

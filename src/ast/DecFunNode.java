@@ -19,21 +19,7 @@ public class DecFunNode implements Node {
         this.args = args;
         this.block = (BlockNode) block;
     }
-    @Override
-    public String Analyze() {
-        String t="void";
-        if(this.type!=null){
-            t = this.type.Analyze();
-        }
-        String res = "\n" + "DecFun "+this.id.Analyze();
-        if (this.args.size() != 0) {
-            for (Node arg : this.args) {
-                res += arg.Analyze();
-            }
-        }
-        res += block.Analyze();
-        return res;
-    }
+
 
     @Override
     public Node typeCheck() {

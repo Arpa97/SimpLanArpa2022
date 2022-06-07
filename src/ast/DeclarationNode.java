@@ -13,10 +13,6 @@ public class DeclarationNode implements Node{
         this.dec = dec;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n"+dec.Analyze();
-    }
 
     //forse bisogna fare distinzione se è una decfun o decvar
     @Override

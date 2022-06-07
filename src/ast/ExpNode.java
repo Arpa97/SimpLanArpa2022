@@ -13,10 +13,6 @@ public class ExpNode implements Node {
         this.exp = exp;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n"+"ExpNode "+exp.Analyze();
-    }
 
     @Override
     public Node typeCheck() {

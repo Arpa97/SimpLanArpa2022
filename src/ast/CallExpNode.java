@@ -14,11 +14,6 @@ public class CallExpNode implements Node {
     }
 
     @Override
-    public String Analyze() {
-        return "\n"+"Call "+this.call.Analyze();
-    }
-
-    @Override
     public Node typeCheck() {
         return call.typeCheck(); //ste
     }

@@ -60,21 +60,7 @@ public class ProgramNode implements Node{
         return code;
     }
 
-    @Override
-    public String Analyze() {
-        String res = "";
-        if (this.declarations != null) {
-            for (Node dec : declarations) {
-                res += dec.Analyze();
-            }
-        }
-        if (this.statements != null) {
-            for (Node dec : statements) {
-                res += dec.Analyze();
-            }
-        }
-        return "\n" + "Program" + res;
-    }
+
 
     @Override
     public ArrayList<SemanticError> checkSemantics(Environment env) {
@@ -97,6 +83,11 @@ public class ProgramNode implements Node{
         env.exitScope();
 
         return res;
+    }
+
+    @Override
+    public String Analyze() {
+        return null;
     }
 
     public ArrayList<SemanticError> checkSemanticsFunction(Environment env) {

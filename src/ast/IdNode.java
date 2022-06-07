@@ -13,10 +13,6 @@ public class IdNode implements Node{
         this.id = id;
     }
 
-    @Override
-    public String Analyze() {
-        return "\n"+"ID "+this.id;
-    }
 
     @Override
     public Node typeCheck() {

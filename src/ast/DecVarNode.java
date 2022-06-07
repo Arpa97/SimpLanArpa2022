@@ -29,14 +29,6 @@ public class DecVarNode implements Node{
 
 
     @Override
-    public String Analyze() {
-        if(this.exp!=null){
-            return "\n"+"DecVar "+this.type.Analyze()+this.id.Analyze()+this.exp.Analyze();
-        }
-        return "\n"+"DecVar "+this.type.Analyze()+this.id.Analyze();
-    }
-
-    @Override
     public Node typeCheck() {
         if(exp != null){
             if(!(SimpLanPlusLib.isSubtype(type, exp.typeCheck()))){

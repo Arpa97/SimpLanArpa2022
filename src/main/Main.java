@@ -44,7 +44,8 @@ public class Main {
 
         //handler is fulled during the tree parse
         if (!handler.err_list.isEmpty()){
-            System.out.println("ERROR FOUND! Check the logfile\n");
+            System.out.println("SYNTAX ERROR FOUND! Check the logfile\n");
+            return;
         }
 
         System.out.println("No syntax error found\n");
@@ -56,11 +57,9 @@ public class Main {
         //calling check semantics. Err will store all the errors found by check semantics
         ArrayList<SemanticError> err = ast.checkSemantics(env);
 
-        //in each node. Called recursively till leaf is found. returns information about the analyzed node
-        //needed to fill err with errors (if found)
-        ast.Analyze();
+
         if(err!=null && err.size()>0) {
-            System.out.println("ERROR FOUND! Check the logfile\n");
+            System.out.println("SEMANTIC ERROR FOUND! Check the logfile\n");
             BufferedWriter wr = new BufferedWriter(new FileWriter(out2));
             for (SemanticError e : err) {
                 System.out.println(e);
