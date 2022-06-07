@@ -1,0 +1,36 @@
+STE: COSE FATTE O DA TENERE CONTO
+
+- al prof non piace il tipo di ritorno void, preferisce null, anche nelle regole di inferenza dalla teoria
+
+- aggiunto entry e nesting level nel nodo IdNode
+
+- scomposti i vari tipi di BinExp
+
+- nella svm ho scritto accanto ai comandi le istruzioni come le intendo io dalla teoria
+
+- bisogna fare la distinzione tra decVar e decFun in DeclarationNode?
+
+- in CallNode ho aggiunto il nestingLevel tra i parametri
+
+-decFunNode, BlockNode
+
+-decVarNode: bisogna mettere a posto il paramentro STentry entry, perchè serve nella code generation
+
+-forse con DerExp si considera IDnode del prof. guardare se servono STentry entry ed int nesting level
+
+-classe PointerTypeNode da implementare?
+
+-aggiunto checkRetValue in Statement, Ite, Block
+
+- da riguardare il checkRet in BlockNode
+
+- ho creato sia intTypeNode che boolTypeNode, ma nel typechecking di Assignment ho usato un Typenode passando void. Bisogna riguardare quale tipo di nodo si passa nei nodi degli assegnamenti
+
+
+TYPECHECKING e CODGEN MANCANTI
+CallNode (solo codgen)
+decFunNode
+BlockNode
+PrintNode(solo codegen)
+
+

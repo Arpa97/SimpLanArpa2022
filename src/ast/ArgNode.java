@@ -9,11 +9,11 @@ import java.util.HashMap;
 // aggiunti get e setter id e type
 public class ArgNode implements Node {
 
-        private TypeNode type;
+        private Node type;
         private IdNode id;
         private boolean isVar = false;
 
-        public ArgNode(TypeNode type, IdNode id, boolean isVar) {
+        public ArgNode(Node type, IdNode id, boolean isVar) {
             this.type = type;
             this.id = id;
             this.isVar = isVar;
@@ -31,7 +31,7 @@ public class ArgNode implements Node {
             return type;
         }
     
-        public void setType(TypeNode type) {
+        public void setType(Node type) {
             this.type = type;
         }
         @Override

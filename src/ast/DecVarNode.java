@@ -4,6 +4,7 @@ import com.sun.xml.internal.bind.v2.model.core.ID;
 import util.Environment;
 import util.SemanticError;
 import util.SimpLanPlusLib;
+import util.VoidNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class DecVarNode implements Node{
                 System.exit(0);
             }
         }
-        return null;
+        return new VoidNode();
     }
 
     @Override

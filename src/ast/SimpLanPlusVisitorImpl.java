@@ -108,7 +108,12 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node> {
     }
 
     @Override public Node visitType(SimpLanPlusParser.TypeContext ctx){
-        return new TypeNode(ctx.getText());
+        
+        //return new TypeNode(ctx.getText());
+        if(ctx.getText().equals("int"))
+            return new IntTypeNode();
+        else 
+            return new BoolTypeNode();
     }
 
     @Override public Node visitArg(SimpLanPlusParser.ArgContext ctx){
@@ -116,7 +121,7 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node> {
         if(ctx.children.get(0).toString().equals("var")){
             isVar = true;
         }
-        return new ArgNode((TypeNode)visit(ctx.type()), new IdNode(ctx.ID().getText()), isVar);
+        return new ArgNode((Node)visit(ctx.type()), new IdNode(ctx.ID().getText()), isVar);
     }
 
     @Override public Node visitAssignment(SimpLanPlusParser.AssignmentContext ctx){
