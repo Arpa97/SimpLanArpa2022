@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public class BoolTypeNode implements Node{
     
-    private String s;
-    
     public BoolTypeNode() {
         
     }
@@ -30,6 +28,6 @@ public class BoolTypeNode implements Node{
 
     @Override
     public String Analyze() {
-        return s + "BoolType\n";
+        return "BoolType\n";
     }
 }

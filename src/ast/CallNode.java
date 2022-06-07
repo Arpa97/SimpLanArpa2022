@@ -2,13 +2,20 @@ package ast;
 
 import util.Environment;
 import util.SemanticError;
+import util.SimpLanPlusLib;
 
 import java.util.ArrayList;
 
+
+//MODIFICHE STE: 
+// aggiunto entry e nesting level, getter e setter vari
 public class CallNode implements Node{
 
     private IdNode id;
     private ArrayList<Node> exp;
+    
+    private STentry entry;
+    private int nlevel;
 
     public CallNode(IdNode id, ArrayList<Node> exp){
         this.id = id;
@@ -19,6 +26,36 @@ public class CallNode implements Node{
         this.id = id;
     }
 
+    public CallNode(IdNode id, ArrayList<Node> exp, STentry entry){
+        this.id = id;
+        this.exp = exp;
+        this.entry = entry;
+    }
+
+    public IdNode getId() {
+        return id;
+    }
+
+    public void setId(IdNode id) {
+        this.id = id;
+    }
+
+    public ArrayList<Node> getExp() {
+        return exp;
+    }
+
+    public void setExp(ArrayList<Node> exp) {
+        this.exp = exp;
+    }
+
+    public STentry getEntry() {
+        return entry;
+    }
+
+    public void setEntry(STentry entry) {
+        this.entry = entry;
+    }
+
 
     @Override
     public String Analyze() {
@@ -27,7 +64,27 @@ public class CallNode implements Node{
 
     @Override
     public Node typeCheck() {
-        return null;
+        ArrowTypeNode t = null;
+        if (entry.getType() instanceof ArrowTypeNode){
+            t=(ArrowTypeNode) entry.getType(); 
+        } else{
+            System.out.println("Call Error: invocation of a non-function "+id);
+            System.exit(0);
+        }
+        ArrayList<Node> p = t.getParList();
+        
+        if(exp.size() != p.size()){
+            System.out.println("Incorrect number of declared parameters ");
+            System.exit(0);
+        }
+        
+        for(int i = 0; i < p.size(); i++){
+            if(!(SimpLanPlusLib.isSubtype((exp.get(i)).typeCheck(), ((ArgNode)p.get(i)).getType()))){
+                System.out.println("Call Error: wrong type for " + (i + 1) + "-th parameter in the invocation of " + id);
+                System.exit(0);
+            }
+        }
+        return t.getRet();
     }
 
     @Override

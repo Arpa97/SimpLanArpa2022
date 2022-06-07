@@ -36,8 +36,13 @@ public class BlockNode implements Node {
     }
     @Override
     public Node typeCheck() {
+        
+        //come nel program node nel nostro caso, ma con decvar
+        
         return null;
     }
+    
+    //funzione per verificare il tipo di ritorno del blocco?
 
     @Override
     public String codeGeneration() {

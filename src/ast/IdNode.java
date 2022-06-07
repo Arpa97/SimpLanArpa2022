@@ -29,7 +29,7 @@ public class IdNode implements Node{
 
     @Override
     public String codeGeneration() {
-        return null;
+        return " ";
     }
 
     @Override

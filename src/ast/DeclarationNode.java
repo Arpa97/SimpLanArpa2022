@@ -18,15 +18,17 @@ public class DeclarationNode implements Node{
         return "\n"+dec.Analyze();
     }
 
+    //forse bisogna fare distinzione se è una decfun o decvar
     @Override
     public Node typeCheck() {
         
         return dec.typeCheck();
     }
 
+    //anche qui bisognerà distinguere
     @Override
     public String codeGeneration() {
-        return null;
+        return dec.codeGeneration();
     }
 
     @Override

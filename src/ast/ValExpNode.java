@@ -27,7 +27,7 @@ public class ValExpNode implements Node {
 
     @Override
     public String codeGeneration() {
-        return "lir1"+value+"\n"; //li r1 val   s->[]
+        return "lir1 "+value+"\n"; //li r1 val   s->[]
     }
 
     @Override

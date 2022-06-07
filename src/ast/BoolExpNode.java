@@ -25,12 +25,13 @@ public class BoolExpNode implements Node {
     }
     @Override
     public Node typeCheck() {
-        return null;
+        return new BoolTypeNode();
     }
 
     @Override
     public String codeGeneration() {
-        return null;
+        
+        return "lir1" + (bool?1:0)+"\n";    //li r1 1/0 dipende cosa si passa
     }
 
     @Override

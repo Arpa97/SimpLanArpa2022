@@ -37,6 +37,12 @@ public class DecFunNode implements Node {
 
     @Override
     public Node typeCheck() {
+        
+        //qui bisogna verificare che il tipo di ritorno: 
+        // - se è void non torna niente
+        // - se ha un tipo != void, bisogna verificare se è presente il return statement
+        // - se ha un tipo != void , ed il return statement è sbagliato
+        
         return null;
     }
 

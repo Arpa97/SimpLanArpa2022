@@ -5,6 +5,8 @@ import util.SemanticError;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//MODIFICHE STE: 
+// aggiunti get e setter id e type
 public class ArgNode implements Node {
 
         private TypeNode type;
@@ -15,6 +17,22 @@ public class ArgNode implements Node {
             this.type = type;
             this.id = id;
             this.isVar = isVar;
+        }
+
+        public IdNode getId(){
+            return id;
+        }
+    
+        public void setId(IdNode id){
+            this.id = id;
+        }
+    
+        public Node getType() {
+            return type;
+        }
+    
+        public void setType(TypeNode type) {
+            this.type = type;
         }
         @Override
         public String Analyze() {

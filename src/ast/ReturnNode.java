@@ -30,7 +30,7 @@ public class ReturnNode implements Node{
 
     @Override
     public String codeGeneration() {
-        return null;
+        return exp.codeGeneration() + "srv\n";
     }
 
     @Override
