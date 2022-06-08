@@ -1,5 +1,6 @@
 package ast;
 
+import ast.binExp.*;
 import parser.SimpLanPlusBaseVisitor;
 import parser.SimpLanPlusParser;
 
@@ -181,7 +182,40 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node> {
     }
 
     @Override public Node visitBinExp(SimpLanPlusParser.BinExpContext ctx){
-        return new BinExpNode(ctx.op.getText(), visit(ctx.left), visit(ctx.right));
+        Node left = (Node) visit(ctx.left);
+        Node right = (Node) visit(ctx.right);
+        String op  = ctx.op.getText();
+        
+        switch(op){
+            case "*":
+                return new BinExpMulNode(left, right, op);
+            case "/":
+                return new BinExpDivNode(left, right, op);
+            case "+":
+                return new BinExpPlusNode(left, right, op);
+            case "-":
+                return new BinExpMinNode(left, right, op);
+            case "<":
+                return new BinExpLessThanNode(left, right, op);
+            case "<=":
+                return new BinExpLessEqNode(left, right, op);
+            case ">":
+                return new BinExpGreatThanNode(left, right, op);
+            case ">=":
+                return new BinExpGreatEqNode(left, right, op);
+            case "==":
+                return new BinExpEqNode(left, right, op);
+            case "!=":
+                return new BinExpNotEqNode(left, right, op);
+            case "&&":
+                return new BinExpAndNode(left, right, op);
+            case "||":
+                return new BinExpOrNode(left, right, op);
+            default:
+                throw new IllegalArgumentException("Operator `" + ctx.op.getText() + "` undefined");
+            
+        }
+        //return new BinExpNode(ctx.op.getText(), visit(ctx.left), visit(ctx.right));
     }
 
     @Override public Node visitCallExp(SimpLanPlusParser.CallExpContext ctx){

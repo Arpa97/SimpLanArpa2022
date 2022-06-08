@@ -11,7 +11,9 @@ public int lexicalErrors=0;
 /*------------------------------------------------------------------
  * PARSER RULES
  *------------------------------------------------------------------*/
-  
+
+
+
 assembly: (instruction)* ;
 
 instruction:
@@ -66,6 +68,8 @@ instruction:
 	  | LIR2 n=NUMBER
 	  | NEW
 	  ) ;
+
+
  	 
 /*------------------------------------------------------------------
  * LEXER RULES
@@ -82,7 +86,9 @@ MULT	 : 'mult' ;  	// r1 <- r1 * r2
 DIV	 : 'div' ;	// r1 <- r1 / r2
 
 // -------------- BOOLEAN OPERATIONS --------------
-BRANCHEQ : 'beq' ;	// jump to label if r1 == r2
+BRANCHEQ : 'beq' ;	
+
+// jump to label if r1 == r2
 BRANCHLESSEQ:'bleq' ;	// jump to label if r1 <= r2
 BRANCHLESS : 'bless' ; // jump to label if r1 < r2
 AND : 'and'; // r1 = 1 if r1 && r2 is true else r1 = 0

@@ -1,6 +1,7 @@
 STE: COSE FATTE O DA TENERE CONTO
 
 - al prof non piace il tipo di ritorno void, preferisce null, anche nelle regole di inferenza dalla teoria
+(*AGGIORNAMENTO* : il tipo null nella DecVar dava problemi quindi l'ho dovuto cambiare con il tipo void)
 
 - aggiunto entry e nesting level nel nodo IdNode
 
