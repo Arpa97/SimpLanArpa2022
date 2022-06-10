@@ -11,12 +11,12 @@ public class Effect {
         this.varEffect = 0;
     }
 
-    public int getVarEffect() {
-        return varEffect;
+    public boolean getUsed() {
+        return this.varEffect == 2;
     }
 
-    public void setVarEffect(int varEffect) {
-        this.varEffect = varEffect;
+    public boolean getInitialized() {
+        return this.varEffect == 1;
     }
     
     public void setInitialized(){
@@ -26,6 +26,10 @@ public class Effect {
     }
     
     public void setUsed(){
-        this.varEffect = 2;
+        
+        if(this.varEffect >= 1) this.varEffect = 2;
     }
+    
+    public int getVarEffect(){return this.varEffect;}
+            
 }

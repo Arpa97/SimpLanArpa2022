@@ -11,7 +11,6 @@ public class PrintNode implements Node{
     //'print' exp;
 
     private Node exp;
-    //private Effect effect;
 
     public PrintNode(Node exp){
         this.exp = exp;
@@ -21,8 +20,15 @@ public class PrintNode implements Node{
     @Override
     public Node typeCheck() {
         exp.typeCheck();
-        //effect.setUsed(true);
-        return new VoidNode(); //ste
+        if(exp.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (exp);
+            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
+                System.out.println("Errore, variabile non inizializzata");
+                System.exit(0);
+            }
+            exp1.getIdNode().getEntry().getEffect().setUsed();
+        }
+        return null; //ste metti null
     }
 
     @Override
@@ -39,4 +45,6 @@ public class PrintNode implements Node{
     public String Analyze() {
         return "Print node: " + this.exp.Analyze() + "\n";
     }
+    
+    public Node getExp(){ return this.exp;}
 }

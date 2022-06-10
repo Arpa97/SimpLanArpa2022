@@ -1,20 +1,25 @@
 package ast;
 
+import util.Effect;
+
 public class STentry {
 
     private int nl;
     private Node type;
     private int offset;
+    private Effect effect;
 
     public STentry(int n, int os) {
         nl = n;
         offset = os;
+        effect = new Effect();
     }
 
     public STentry(int n, Node t, int os) {
         nl = n;
         type = t;
         offset = os;
+        effect = new Effect();
     }
 
     public void addType(Node t) {
@@ -38,6 +43,10 @@ public class STentry {
                 "STentry: type\n" +
                 type.Analyze() +
                 "STentry: offset " + Integer.toString(offset) + "\n";
+    }
+    
+    public Effect getEffect(){
+        return this.effect;
     }
 
 }

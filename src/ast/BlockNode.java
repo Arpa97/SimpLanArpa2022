@@ -24,22 +24,166 @@ public class BlockNode implements Node {
     @Override
     public Node typeCheck() {
         
-        //return new IntTypeNode(); //se non ci sono dichiarazioni e statement ritorna null/blocco void
-
-        ArrayList<Node> baseTypeNode = new ArrayList<Node>();
-
         for (Node dec: declarations){
-            baseTypeNode.add(dec.typeCheck());
+            dec.typeCheck();
         }
-
+        ArrayList<ReturnNode> returnNode = new ArrayList<ReturnNode>();
         for (Node st: statements){
-            baseTypeNode.add(st.typeCheck());
+            
+            StatementNode stat = (StatementNode) (st);
+            Node stat1 = stat.getStatement();
+            if(stat1.getClass().getName().contains("ReturnNode")){
+                ReturnNode ass = (ReturnNode) (stat1);
+                returnNode.add(ass);
+                
+                Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
+                if(ass1.getClass().getName().contains("DerExpNode")){
+                    DerExpNode var = (DerExpNode) (ass1);
+                    if(var.getIdNode().getEntry().getEffect().getVarEffect() < 1){
+                        System.err.println("Variable not initialized");
+                        System.exit(0);
+                    }
+                }
+                if(ass1.getClass().getName().contains("CallExpNode")){
+                    CallExpNode call = (CallExpNode) (ass1);
+                    CallNode call1 = (CallNode) (call.getCall());
+                    ArrayList<Node> expCall = call1.getExp();
+                    for(Node exp : expCall){
+                        if(exp.getClass().getName().contains("DerExpNode")){
+                            DerExpNode exp1 = (DerExpNode) (exp);
+                            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
+                                System.err.println("Variable not initialized");
+                                System.exit(0);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                st.typeCheck();
+                if (stat1.getClass().getName().contains("AssignmentNode")) {
+                    AssignmentNode ass = (AssignmentNode) (stat1);
+                    Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
+                    if (ass1.getClass().getName().contains("DerExpNode")) {
+                        DerExpNode var = (DerExpNode) (ass1);
+                        if (var.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                            System.err.println("Variable not initialized");
+                            System.exit(0);
+                        }
+                    }
+                    if (ass1.getClass().getName().contains("CallExpNode")) {
+                        CallExpNode call = (CallExpNode) (ass1);
+                        CallNode call1 = (CallNode) (call.getCall());
+                        ArrayList<Node> expCall = call1.getExp();
+                        for (Node exp : expCall) {
+                            if (exp.getClass().getName().contains("DerExpNode")) {
+                                DerExpNode exp1 = (DerExpNode) (exp);
+                                if (exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                                    System.err.println("Variable not initialized");
+                                    System.exit(0);
+                                }
+                            }
+
+                        }
+                    }
+                }
+                if (stat1.getClass().getName().contains("PrintNode")) {
+                    PrintNode ass = (PrintNode) (stat1);
+                    Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
+                    if (ass1.getClass().getName().contains("DerExpNode")) {
+                        DerExpNode var = (DerExpNode) (ass1);
+                        if (var.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                            System.err.println("Variable not initialized");
+                            System.exit(0);
+                        }
+                    }
+                    if (ass1.getClass().getName().contains("CallExpNode")) {
+                        CallExpNode call = (CallExpNode) (ass1);
+                        CallNode call1 = (CallNode) (call.getCall());
+                        ArrayList<Node> expCall = call1.getExp();
+                        for (Node exp : expCall) {
+                            if (exp.getClass().getName().contains("DerExpNode")) {
+                                DerExpNode exp1 = (DerExpNode) (exp);
+                                if (exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                                    System.err.println("Variable not initialized");
+                                    System.exit(0);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (stat1.getClass().getName().contains("IteNode")) {
+                    IteNode ass = (IteNode) (stat1);
+                    Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
+                    if (ass1.getClass().getName().contains("DerExpNode")) {
+                        DerExpNode var = (DerExpNode) (ass1);
+                        if (var.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                            System.err.println("Variable not initialized");
+                            System.exit(0);
+                        }
+                    }
+                    if (ass1.getClass().getName().contains("CallExpNode")) {
+                        CallExpNode call = (CallExpNode) (ass1);
+                        CallNode call1 = (CallNode) (call.getCall());
+                        ArrayList<Node> expCall = call1.getExp();
+                        for (Node exp : expCall) {
+                            if (exp.getClass().getName().contains("DerExpNode")) {
+                                DerExpNode exp1 = (DerExpNode) (exp);
+                                if (exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                                    System.err.println("Variable not initialized");
+                                    System.exit(0);
+                                }
+                            }
+
+                        }
+                    }
+                }
+                if (stat1.getClass().getName().contains("CallNode")) {
+                    CallNode ass = (CallNode) (stat1);
+                    ArrayList<Node> ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
+                    for (Node assNode : ass1) {
+                        if (assNode.getClass().getName().contains("DerExpNode")) {
+                            DerExpNode var = (DerExpNode) (assNode);
+                            if (var.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                                System.err.println("Variable not initialized");
+                                System.exit(0);
+                            }
+                        }
+                        if (assNode.getClass().getName().contains("CallExpNode")) {
+                            CallExpNode call = (CallExpNode) (assNode);
+                            CallNode call1 = (CallNode) (call.getCall());
+                            ArrayList<Node> expCall = call1.getExp();
+                            for (Node exp : expCall) {
+                                if (exp.getClass().getName().contains("DerExpNode")) {
+                                    DerExpNode exp1 = (DerExpNode) (exp);
+                                    if (exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
+                                        System.err.println("Variable not initialized");
+                                        System.exit(0);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            
         }
         //ritorna ultima dichiarazione o stm del blocco
-        if(baseTypeNode.size() > 0){
-            return baseTypeNode.get(baseTypeNode.size() - 1);
+        boolean i = false;
+        for(ReturnNode node : returnNode){
+            for (ReturnNode tempNode : returnNode){
+                if (!tempNode.equals(node)) i = true;
+            }
         }
-        else return new VoidNode(); //se non ci sono dichiarazioni e statement ritorna null/blocco void
+        if (i){
+            System.err.println("Incompatible return types");
+            System.exit(0);
+        }
+        if(returnNode.size() > 0) return returnNode.get(0);
+
+        return null; //se non ci sono dichiarazioni e statement ritorna null/blocco void
     }
     
     //funzione per verificare il tipo di ritorno del blocco?

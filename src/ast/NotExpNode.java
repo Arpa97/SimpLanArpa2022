@@ -17,7 +17,13 @@ public class NotExpNode extends BaseExpNode{
 
     @Override
     public Node typeCheck() {
-        return exp.typeCheck();
+        Node type = exp.typeCheck();
+        if(exp.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (exp);
+            exp1.getIdNode().getEntry().getEffect().setUsed();
+        }
+        
+        return type;
     }
 
     @Override

@@ -12,14 +12,12 @@ public class DecVarNode implements Node {
     private IdNode id;
     private Node exp;
     private STentry entry;
-    private Effect effect;
     //private Offset offset;
 
     public DecVarNode(Node type, IdNode id, Node exp){
         this.type = type;
         this.id = id;
         this.exp = exp;
-        this.effect = new Effect();
     }
 
     public DecVarNode(Node type, IdNode id){
@@ -36,10 +34,11 @@ public class DecVarNode implements Node {
                 System.out.println("Variable Declaration Error: incompatible value for variable " + id);
                 System.exit(0);
             }
-            effect.setInitialized();
+            entry.getEffect().setInitialized();
         }
+        System.out.println(entry);
         
-        return new VoidNode();
+        return type;
     }
 
     @Override
@@ -56,15 +55,21 @@ public class DecVarNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(Environment env) {
+        
         ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-        HashMap<String, STentry> st = env.symTable.get(env.nestingLevel);
-        if(st.put(this.id.getId(), new STentry(env.nestingLevel, type, env.offset--)) != null){
-            res.add(new SemanticError("Variable id "+this.id.getId()+" already declared."));
-        }
         if(this.exp!=null){
             res.addAll(this.exp.checkSemantics(env));
-            
         }
+        
+        HashMap<String, STentry> st = env.symTable.get(env.nestingLevel);
+        STentry entry1 = new STentry(env.nestingLevel, type, env.offset--);
+        if(st.put(this.id.getId(), entry1) != null){
+            res.add(new SemanticError("Variable id "+this.id.getId()+" already declared."));
+        }
+        if(exp != null){
+            entry1.getEffect().setInitialized();
+        }
+       entry = entry1;
         
         return res;
     }
@@ -73,4 +78,6 @@ public class DecVarNode implements Node {
     public String Analyze() {
         return null;
     }
+    
+    public STentry getEntry(){ return this.entry;}
 }

@@ -38,6 +38,7 @@ public class DecFunNode implements Node {
         //System.out.println(this.block.typeCheck());
         //qui bisogna verificare che il tipo di ritorno: 
         // - se è void non torna niente
+        Node blockTypeCheck = block.typeCheck();
         if(this.type instanceof VoidNode && this.block.checkRetValue()){
             //errore perchè la funzione è dichiarata come void ha ha un tipo di ritorno
             System.out.println("Function Declaration Error: function " + id + " is void and can't have return statement");
@@ -50,12 +51,13 @@ public class DecFunNode implements Node {
             System.exit(0);
         }
         
-        if(!(SimpLanPlusLib.isSubtype(block.typeCheck(), this.type))){
+        if(!(SimpLanPlusLib.isSubtype(blockTypeCheck, this.type))){
             //i tipi di ritorno del blocco e della funzione non corrispondono
             System.out.println("Function Declaration Error: incompatible type returns for decfun and the body");
             System.exit(0);
         }
-        return block.typeCheck();
+        //block.typeCheck();
+        return this.type;
     }
 
     @Override

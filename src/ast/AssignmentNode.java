@@ -9,18 +9,20 @@ public class AssignmentNode implements Node{
         // ID '=' exp
         private IdNode id;
         private Node exp;
+        private Node type;
         private STentry entry;
-        private Effect effect;
 
         public AssignmentNode(IdNode ID, Node exp){
             this.id = ID;
             this.exp = exp;
-            this.effect = new Effect();
+        }
+        private void setType(Node type){
+            this.type = type;
         }
 
         @Override
         public Node typeCheck() {
-            Node idType = id.typeCheck();
+            
             Node expType = exp.typeCheck();
             
             if(entry == null){
@@ -28,15 +30,19 @@ public class AssignmentNode implements Node{
                 System.exit(0);
             }
             
-            if(!SimpLanPlusLib.isSubtype(expType, idType)){
+            if(!SimpLanPlusLib.isSubtype(expType, type)){
                 System.out.println("Assignment Error: Assignment type failed");
                 System.exit(0);
             }
-            //la variabile viene inizializzata
-            effect.setInitialized();
             
+            if(exp.getClass().getName().contains("DerExpNode")){
+                DerExpNode exp1 = (DerExpNode) exp;
+                exp1.getIdNode().getEntry().getEffect().setUsed();
+            }
+            //la variabile viene inizializzata
+            entry.getEffect().setInitialized();
             //faccio tornare un null perchè al prof non piace il tipo di ritorno void
-            return new VoidNode();
+            return null;
         }
 
         @Override
@@ -57,6 +63,7 @@ public class AssignmentNode implements Node{
             if (tmp==null)
                 res.add(new SemanticError("Variable "+this.id.getId()+" not declared"));
             else{   // if variable exists, check the exp
+                setType(tmp.getType());
                 if(this.exp != null) {
                     res.addAll(this.exp.checkSemantics(env));
                 }
@@ -70,4 +77,6 @@ public class AssignmentNode implements Node{
     public String Analyze() {
         return "AsgnNode: " + this.id.Analyze() + " = " + this.exp.Analyze();
     }
+    
+    public Node getExp(){ return this.exp;}
 }

@@ -15,6 +15,10 @@ public class ReturnNode implements Node{
 
     @Override
     public Node typeCheck() {
+        if(exp.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (exp);
+            exp1.getIdNode().getEntry().getEffect().setUsed();
+        }
         return exp.typeCheck(); //ste
     }
 
@@ -32,4 +36,6 @@ public class ReturnNode implements Node{
     public String Analyze() {
         return "ReturnNode; " + this.exp.Analyze();
     }
+    
+    public Node getExp(){ return this.exp;}
 }

@@ -32,4 +32,6 @@ public class CallExpNode implements Node {
     public String Analyze() {
         return "CallExpNode: " + this.call.Analyze() + "\n";
     }
+    
+    public Node getCall(){ return this.call; }
 }

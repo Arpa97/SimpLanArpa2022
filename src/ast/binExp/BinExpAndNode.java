@@ -1,6 +1,7 @@
 package ast.binExp;
 
 import ast.BoolTypeNode;
+import ast.DerExpNode;
 import ast.Node;
 import util.Effect;
 import util.Environment;
@@ -14,8 +15,6 @@ public class BinExpAndNode implements Node {
     private Node left;
     private Node right;
     private String op;
-    private Effect effectLeft;
-    private Effect effectRight;
     
 
     public BinExpAndNode(Node left, Node right, String op) {
@@ -31,6 +30,15 @@ public class BinExpAndNode implements Node {
             System.out.println("Incompatible operands type for the operator " + op +"\n");
             System.exit(0);
             
+        }
+        
+        if(left.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (left);
+            exp1.getIdNode().getEntry().getEffect().setUsed();
+        }
+        if(right.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (right);
+            exp1.getIdNode().getEntry().getEffect().setUsed();
         }
         return new BoolTypeNode();
     }

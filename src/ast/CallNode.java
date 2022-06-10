@@ -93,6 +93,12 @@ public class CallNode implements Node{
                 System.exit(0);
             }
         }
+        for(int i = 0; i < exp.size(); i++){
+            if(exp.get(i).getClass().getName().contains("DerExpNode")){
+                DerExpNode exp1 = (DerExpNode) (exp.get(i));
+                exp1.getIdNode().getEntry().getEffect().setUsed();
+            }
+        }
         return t.getRet();
     }
 

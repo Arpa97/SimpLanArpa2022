@@ -93,6 +93,10 @@ public class IteNode implements Node{
                 System.exit(0);
             }
         }
+        if(exp.getClass().getName().contains("DerExpNode")){
+            DerExpNode exp1 = (DerExpNode) (exp);
+            exp1.getIdNode().getEntry().getEffect().setUsed();
+        }
         return then_statement.typeCheck();
     }
 

@@ -9,14 +9,10 @@ import java.util.ArrayList;
 public class IdNode implements Node{
 
     private String id;
-    private Effect effect;
     private STentry entry;
-    private int nestinglevel;
 
     public IdNode(String id){
-        
         this.id = id;
-        this.effect = new Effect();
     }
 
 
@@ -27,8 +23,12 @@ public class IdNode implements Node{
 //            System.out.println("Wrong usage of function identifier");
 //            System.exit(0);
 //        }
-        
-        return null;
+        if(entry == null){
+            System.out.println("Variable "+this.id+" not declared");
+            System.exit(0);
+        }
+
+        return entry.getType();
     }
 
     public String getId() {
@@ -48,11 +48,25 @@ public class IdNode implements Node{
 
     @Override
     public ArrayList<SemanticError> checkSemantics(Environment env) {
-        return new ArrayList<SemanticError>();
+        
+        //return new ArrayList<SemanticError>();
+        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
+
+        int j=env.nestingLevel;
+        STentry tmp=null;
+        while (j>=0 && tmp==null)
+            tmp=(env.symTable.get(j--)).get(this.id);
+        if (tmp==null)
+            res.add(new SemanticError("Variable "+this.id+" not declared"));
+        else entry = tmp;
+        
+        return res;
     }
 
     @Override
     public String Analyze() {
-        return "IdNode: " + this.id + "at nesting level " + nestinglevel + "\n" + entry.Analyze();
+        return "IdNode: " + this.id + entry.Analyze();
     }
+
+    public STentry getEntry(){ return this.entry; }
 }

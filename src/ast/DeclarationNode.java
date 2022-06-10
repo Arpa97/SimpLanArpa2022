@@ -39,4 +39,8 @@ public class DeclarationNode implements Node{
     public String Analyze() {
         return null;
     }
+
+    public Node getDec() {
+        return dec;
+    }
 }
