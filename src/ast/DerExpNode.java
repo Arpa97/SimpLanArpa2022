@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class DerExpNode implements Node {
 
     private IdNode id;
-    //private STentry entry;
+    private STentry entry;
     //private int nestinglevel;
 
     public DerExpNode(IdNode id){
@@ -23,7 +23,13 @@ public class DerExpNode implements Node {
 //            System.exit(0);
 //        }
 //        return entry.getType();
-        return id.typeCheck();
+        //return id.typeCheck();
+        if(entry == null){
+            System.out.println("Variable "+this.id.getId()+" not declared");
+            System.exit(0);
+        }
+        //System.out.println(entry.getType());
+        return entry.getType();
     }
 
     @Override
@@ -41,11 +47,13 @@ public class DerExpNode implements Node {
             tmp=(env.symTable.get(j--)).get(this.id.getId());
         if (tmp==null)
             res.add(new SemanticError("Variable "+this.id.getId()+" not declared"));
+        
+        entry = tmp;
         return res;
     }
 
     @Override
     public String Analyze() {
-        return "DerExpNode: " + this.id.Analyze();
+        return "DerExpNode:";
     }
 }

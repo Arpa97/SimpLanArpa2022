@@ -2,6 +2,7 @@ package ast;
 
 import util.Environment;
 import util.SemanticError;
+import util.VoidNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +24,22 @@ public class BlockNode implements Node {
     @Override
     public Node typeCheck() {
         
-        //come nel program node nel nostro caso, ma con decvar
-        
-        return null;
+        //return new IntTypeNode(); //se non ci sono dichiarazioni e statement ritorna null/blocco void
+
+        ArrayList<Node> baseTypeNode = new ArrayList<Node>();
+
+        for (Node dec: declarations){
+            baseTypeNode.add(dec.typeCheck());
+        }
+
+        for (Node st: statements){
+            baseTypeNode.add(st.typeCheck());
+        }
+        //ritorna ultima dichiarazione o stm del blocco
+        if(baseTypeNode.size() > 0){
+            return baseTypeNode.get(baseTypeNode.size() - 1);
+        }
+        else return new VoidNode(); //se non ci sono dichiarazioni e statement ritorna null/blocco void
     }
     
     //funzione per verificare il tipo di ritorno del blocco?

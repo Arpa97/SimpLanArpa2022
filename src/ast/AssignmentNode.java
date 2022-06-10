@@ -1,8 +1,6 @@
 package ast;
 
-import util.Environment;
-import util.SemanticError;
-import util.SimpLanPlusLib;
+import util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +9,13 @@ public class AssignmentNode implements Node{
         // ID '=' exp
         private IdNode id;
         private Node exp;
+        private STentry entry;
+        private Effect effect;
 
         public AssignmentNode(IdNode ID, Node exp){
             this.id = ID;
             this.exp = exp;
+            this.effect = new Effect();
         }
 
         @Override
@@ -22,13 +23,20 @@ public class AssignmentNode implements Node{
             Node idType = id.typeCheck();
             Node expType = exp.typeCheck();
             
+            if(entry == null){
+                System.out.println("Assignment Error: Variable not declareted yet");
+                System.exit(0);
+            }
+            
             if(!SimpLanPlusLib.isSubtype(expType, idType)){
                 System.out.println("Assignment Error: Assignment type failed");
                 System.exit(0);
             }
+            //la variabile viene inizializzata
+            effect.setInitialized();
             
             //faccio tornare un null perchè al prof non piace il tipo di ritorno void
-            return null;
+            return new VoidNode();
         }
 
         @Override
@@ -53,6 +61,7 @@ public class AssignmentNode implements Node{
                     res.addAll(this.exp.checkSemantics(env));
                 }
             }
+            entry = tmp;
 
             return res;
         }

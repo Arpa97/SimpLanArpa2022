@@ -34,6 +34,7 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node> {
         }
         // per ogni statement del blocco...
         for(SimpLanPlusParser.StatementContext sc: ctx.statement()){
+
             statements.add(visit(sc));
         }
         res = new BlockNode(declarations, statements);
@@ -204,7 +205,7 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node> {
             case ">=":
                 return new BinExpGreatEqNode(left, right, op);
             case "==":
-                return new BinExpEqNode(left, right, op);
+                return new BinExpEqNode(left, right, op); //ricordarsi di rimettere BinExpEq
             case "!=":
                 return new BinExpNotEqNode(left, right, op);
             case "&&":

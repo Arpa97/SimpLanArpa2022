@@ -2,34 +2,60 @@ package ast;
 
 import util.Environment;
 import util.SemanticError;
+import util.SimpLanPlusLib;
+import util.VoidNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DecFunNode implements Node {
 
-    private TypeNode type;
+    private Node type;
     private IdNode id;
     private ArrayList<Node> args;
     private BlockNode block;
+    private ProgramNode program;
 
     public DecFunNode(Node type, Node id, ArrayList<Node> args, Node block) {
-        this.type = (TypeNode) type;
+        this.type = (Node) type;
         this.id = (IdNode) id;
         this.args = args;
         this.block = (BlockNode) block;
     }
 
+//    public DecFunNode(Node type, Node id, ArrayList<Node> args, Node program) {
+//        this.type = (TypeNode) type;
+//        this.id = (IdNode) id;
+//        this.args = args;
+//        this.program = (ProgramNode) program;
+//    }
+
 
     @Override
     public Node typeCheck() {
-        
+        System.out.println("decfun Typecheck" + this.type + ", " + this.block);
+        //System.out.println(this.type);
+        //System.out.println(this.block.typeCheck());
         //qui bisogna verificare che il tipo di ritorno: 
         // - se è void non torna niente
-        // - se ha un tipo != void, bisogna verificare se è presente il return statement
-        // - se ha un tipo != void , ed il return statement è sbagliato
+        if(this.type instanceof VoidNode && this.block.checkRetValue()){
+            //errore perchè la funzione è dichiarata come void ha ha un tipo di ritorno
+            System.out.println("Function Declaration Error: function " + id + " is void and can't have return statement");
+            System.exit(0);
+        }
         
-        return null;
+        else if(!this.block.checkRetValue() && !(this.type instanceof VoidNode)){
+            //la funzione ha un tipo di ritorno ma nel corpo non c'è un tipo di ritorno
+            System.out.println("Function Declaration Error: function " + id + " don't have return statement");
+            System.exit(0);
+        }
+        
+        if(!(SimpLanPlusLib.isSubtype(block.typeCheck(), this.type))){
+            //i tipi di ritorno del blocco e della funzione non corrispondono
+            System.out.println("Function Declaration Error: incompatible type returns for decfun and the body");
+            System.exit(0);
+        }
+        return block.typeCheck();
     }
 
     @Override

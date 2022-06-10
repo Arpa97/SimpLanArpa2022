@@ -22,24 +22,45 @@ public class BinExpNode implements Node {
     }
     @Override
     public Node typeCheck() {
-        //se teniamo un solo nodo e poi mettiamo i casi successivamente 
-        // bisogna distinguere i tipi di operazioni interi: + , - , *, /, <, <=, >, >= 
-        // da quelli booleani: == , != , || , && 
-        
-        if((!SimpLanPlusLib.isSubtype(left.typeCheck(), new IntTypeNode()) &&
-            !SimpLanPlusLib.isSubtype(right.typeCheck(), new IntTypeNode())) || 
-                (!SimpLanPlusLib.isSubtype(left.typeCheck(), new BoolTypeNode()) &&
-                        !SimpLanPlusLib.isSubtype(right.typeCheck(), new BoolTypeNode()))){
-            
-            System.out.println("Incompatible operands type for the operator" + op +"\n");
-            System.exit(0);
-        }
-        if (SimpLanPlusLib.isSubtype(left.typeCheck(), new BoolTypeNode()) &&
-                SimpLanPlusLib.isSubtype(right.typeCheck(), new BoolTypeNode())){
-            
-            return new BoolTypeNode() /* TypeNode("bool")*/;
-        }
-        return new IntTypeNode() /* TypeNode("int")*/;
+//        switch(op){
+//            //controllo che nelle uguaglianze ambedue i termini siano dello stesso tipo
+//            case "==", "!=": {
+                if(!( SimpLanPlusLib.isSubtype(left.typeCheck(), right.typeCheck()) ||
+                        SimpLanPlusLib.isSubtype(right.typeCheck(), left.typeCheck()) )) {
+                    System.out.println("Incompatible operands type for the operator" + op);
+                    System.exit(0);
+                }
+                return new BoolTypeNode();
+//            }
+//            //controllo che nelle operazioni aritmetiche gli operandi siano interi
+//            case "+", "-", "*", "/": {
+//                if(! (left.typeCheck().getClass().equals(IntTypeNode.class) &&
+//                        right.typeCheck().getClass().equals(IntTypeNode.class))) {
+//                    System.out.println("Type of operand is not integer: Error addressing ----> " + op);
+//                    System.exit(0);
+//                }
+//                return new IntTypeNode();
+//            }
+//            //controllo che nelle disuguaglianze ambedue i termini siano interi
+//            case ">=", "<=", "<", ">": {
+//                if(! (left.typeCheck().getClass().equals(IntTypeNode.class) &&
+//                        right.typeCheck().getClass().equals(IntTypeNode.class))) {
+//                    System.out.println("Type of operand is not integer: Error addressing ---->  " + op);
+//                    System.exit(0);
+//                }
+//                return new BoolTypeNode();
+//            }
+//            //controllo che nelle operazioni booleane or e and gli operandi siano booleani
+//            case "&&", "||": {
+//                if(! (left.typeCheck().getClass().equals(BoolTypeNode.class) &&
+//                        right.typeCheck().getClass().equals(BoolTypeNode.class))) {
+//                    System.out.println("Type of operand is not boolean: Error addressing ---->  " + op);
+//                    System.exit(0);
+//                }
+//                return new BoolTypeNode();
+//            }
+//        }
+        //return null;
     }
 
     @Override

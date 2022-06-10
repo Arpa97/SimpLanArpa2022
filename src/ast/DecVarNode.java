@@ -1,26 +1,25 @@
 package ast;
 
 import com.sun.xml.internal.bind.v2.model.core.ID;
-import util.Environment;
-import util.SemanticError;
-import util.SimpLanPlusLib;
-import util.VoidNode;
+import util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DecVarNode implements Node{
+public class DecVarNode implements Node {
 
     private Node type;
     private IdNode id;
     private Node exp;
     private STentry entry;
+    private Effect effect;
     //private Offset offset;
 
     public DecVarNode(Node type, IdNode id, Node exp){
         this.type = type;
         this.id = id;
         this.exp = exp;
+        this.effect = new Effect();
     }
 
     public DecVarNode(Node type, IdNode id){
@@ -37,7 +36,9 @@ public class DecVarNode implements Node{
                 System.out.println("Variable Declaration Error: incompatible value for variable " + id);
                 System.exit(0);
             }
+            effect.setInitialized();
         }
+        
         return new VoidNode();
     }
 
@@ -62,7 +63,9 @@ public class DecVarNode implements Node{
         }
         if(this.exp!=null){
             res.addAll(this.exp.checkSemantics(env));
+            
         }
+        
         return res;
     }
 

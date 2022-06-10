@@ -1,4 +1,5 @@
 package ast;
+import util.Effect;
 import util.Environment;
 import util.SemanticError;
 
@@ -12,11 +13,13 @@ public class ArgNode implements Node {
         private Node type;
         private IdNode id;
         private boolean isVar = false;
+        //private Effect effect;
 
         public ArgNode(Node type, IdNode id, boolean isVar) {
             this.type = type;
             this.id = id;
             this.isVar = isVar;
+            //this.effect = new Effect();
         }
 
         public IdNode getId(){
@@ -56,6 +59,7 @@ public class ArgNode implements Node {
             if (st.put(this.id.getId(), new STentry(env.nestingLevel, type, env.offset--)) != null) {
                 res.add(new SemanticError("Argument id " + this.id.getId() + " already defined for the function."));
             }
+            
 
             return res;
         }

@@ -1,11 +1,9 @@
 {
-int k = 2;
-    if(k > 2){
-        k = 1;
-    }
-    else{
-        k = 0;
-    }
+int x;
+int y = 2;
+if ( x == y){
+    x = 1;
+}
 }
 
 

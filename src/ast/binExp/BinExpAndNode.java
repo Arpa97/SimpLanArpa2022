@@ -2,6 +2,7 @@ package ast.binExp;
 
 import ast.BoolTypeNode;
 import ast.Node;
+import util.Effect;
 import util.Environment;
 import util.SemanticError;
 import util.SimpLanPlusLib;
@@ -13,6 +14,9 @@ public class BinExpAndNode implements Node {
     private Node left;
     private Node right;
     private String op;
+    private Effect effectLeft;
+    private Effect effectRight;
+    
 
     public BinExpAndNode(Node left, Node right, String op) {
         this.left = left;

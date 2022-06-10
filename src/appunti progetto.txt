@@ -9,7 +9,7 @@ STE: COSE FATTE O DA TENERE CONTO
 
 - nella svm ho scritto accanto ai comandi le istruzioni come le intendo io dalla teoria
 
-- bisogna fare la distinzione tra decVar e decFun in DeclarationNode?
+- bisogna fare la distinzione tra decVar e decFun in DeclarationNode? --> NO
 
 - in CallNode ho aggiunto il nestingLevel tra i parametri
 
@@ -31,7 +31,7 @@ STE: COSE FATTE O DA TENERE CONTO
 TYPECHECKING e CODGEN MANCANTI
 CallNode (solo codgen)
 decFunNode
-BlockNode
-PrintNode(solo codegen)
+BlockNode (TYPECHECKING TORNA VOID, DA FARE CODEGEN)
+PrintNode (solo codegen)
 
 

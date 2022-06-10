@@ -1,7 +1,9 @@
 package ast;
 
+import util.Effect;
 import util.Environment;
 import util.SemanticError;
+import util.VoidNode;
 
 import java.util.ArrayList;
 
@@ -9,6 +11,7 @@ public class PrintNode implements Node{
     //'print' exp;
 
     private Node exp;
+    //private Effect effect;
 
     public PrintNode(Node exp){
         this.exp = exp;
@@ -17,7 +20,9 @@ public class PrintNode implements Node{
 
     @Override
     public Node typeCheck() {
-        return exp.typeCheck(); //ste
+        exp.typeCheck();
+        //effect.setUsed(true);
+        return new VoidNode(); //ste
     }
 
     @Override
