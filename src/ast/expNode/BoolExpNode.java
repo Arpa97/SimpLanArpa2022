@@ -32,7 +32,7 @@ public class BoolExpNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return "lir1" + (parseBoolean?1:0)+"\n";
 	}
 
 	public boolean getBoolExp() {

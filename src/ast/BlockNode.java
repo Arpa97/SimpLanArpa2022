@@ -241,7 +241,28 @@ public class BlockNode implements Node {
 
 	@Override
 	public String codeGeneration(){
-		return "";
+
+		String code="";
+		code += "lfp\n";      //fp -> top       s->[fp]
+		code += "lal\n";      //al -> top       s->[al, fp]
+		code += "cfp\n";      //setta fp<-sp
+
+		for (Node dec : declarations){
+			code += "push0\n";              //s->[d(0) ... d(n)] 
+			code += dec.codeGeneration();   //cgen(stable, dec)     s->[d(0) .. d(n), al, fp]
+		}
+
+		for(Node st : statements){
+			code += st.codeGeneration();    //cgen(stable, stm)
+		}
+		for(Node dec : declarations){
+			code += "pop\n";                //toglie da stack ogni dichiarazione
+		}
+
+		code += "sal\n";        // al <- top    s->[fp]
+		code +="sfp\n";         // fp <- top    s->[]
+
+		return code;
 	}
 
 	@Override

@@ -27,7 +27,17 @@ public class IdNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		int nestingLevel = entry.getNestinglevel();
+		// ID case
+		String ar = "";
+		for(int i = 0; i < nestingLevel - entry.getNestinglevel(); i++ ){
+			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
+		}
+		return "lfp\n" +                        // fp -> top_of_stack :: s -> [fp]
+				"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> []
+				ar     +                        // lw al 0(al) :: al = MEMORY[al + 0] to check the AR; s -> []
+				"lw1 "+ entry.getOffset()+"\n";  // lw r1 entry.offset(al) :: r1 <- MEMORY[entry.offset + al]; s -> []
+		
 	}
 
 	@Override

@@ -1,0 +1,11 @@
+{
+int x = 2;
+
+int f(var int k){
+    return k+1;
+}
+f(x);
+}
+
+
+

@@ -38,7 +38,7 @@ public class RetNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return exp.codeGeneration() + "srv\n";
 	}
 
 	@Override

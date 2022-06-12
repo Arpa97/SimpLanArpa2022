@@ -24,7 +24,7 @@ public class StatementNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return statement.codeGeneration();
 	}
 
 	@Override

@@ -39,4 +39,12 @@ public class NegExpNode extends BaseExpNode {
 		}
 		return new TypeNode("int");
 	}
+
+	@Override
+	public String codeGeneration() {
+		return expr.codeGeneration() +   //r1 <- cgen(stable, negExp)        S->[] 
+				"lir2 -1\n" +           //li r2 -1                          S->[]
+				"mult\n";               //mul r1 r1 r2      (r1* -1)        S->[]
+
+	}
 }

@@ -24,7 +24,7 @@ public class DeclarationNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return dec.codeGeneration();
 	}
 
 	@Override

@@ -60,7 +60,30 @@ public class IteNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+
+		String true_branch  = SimpLanPlusLib.freshLabel();
+		String end_if = SimpLanPlusLib.freshLabel();
+
+		if (else_statement != null){
+			return this.codeGeneration() +          //r1 = cgen(stable, e)
+					"lir2 1\n" +
+					"beq " + true_branch + "\n" +           //se r1 = r2 = 1 quindi la condizione è vera, salta a true_branch
+					else_statement.codeGeneration() +       //qui caso else. r1 = cgen(stable, else_stm)
+					"b " + end_if + "\n" +                  //jump ad end_if
+					true_branch + ":\n" +                   //caso true branch
+					then_statement.codeGeneration() +       //cgen(stable, then)
+					end_if + ":\n";                         //end_if: 
+		} else{
+			//caso in cui non si ha la condizione dell'else branch
+			return  this.codeGeneration() +
+					"lir2 1\n" +
+					"beq  " + true_branch + "\n" +
+					"b " +end_if + "\n" +
+					true_branch + ":\n" +
+					then_statement.codeGeneration() +
+					end_if + ":\n";
+		}
+		
 	}
 
 	@Override

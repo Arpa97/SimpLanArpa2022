@@ -25,7 +25,7 @@ public class DerExpNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return id.codeGeneration();
 	}
 
 	@Override

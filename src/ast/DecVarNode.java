@@ -49,6 +49,13 @@ public class DecVarNode implements Node {
 
 	@Override
 	public String codeGeneration() {
+		if (this.exp != null){
+			//se c'è assegnamento lo si memorizza all'indirizzo dell'offset corrispondente
+			return exp.codeGeneration() +  // r1 = cgen(stable, exp)
+					"swfp " + entryVariable.getOffset() + "\n";  //sw r1 -> entry.offset($fp)
+		}
+
+		//se exp è null
 		return "";
 	}
 

@@ -38,4 +38,10 @@ public class NotExpNode extends BaseExpNode {
 		}
 		return new TypeNode("bool");
 	}
+
+	@Override
+	public String codeGeneration() {
+		return expr.codeGeneration() +           // r1 <- cgen(stable, expNode);                 s -> []
+				"not\n";
+	}
 }

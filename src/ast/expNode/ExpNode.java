@@ -39,7 +39,7 @@ public class ExpNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		return expr.codeGeneration();
 	}
 
 	@Override
