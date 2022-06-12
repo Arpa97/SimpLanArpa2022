@@ -27,12 +27,11 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node>{
 		ArrayList<Node> declarations = new ArrayList<>();
 		ArrayList<Node> statements = new ArrayList<>();
 
-		//for every declarations
+		//DECLARATIONS VISIT
 		for(SimpLanPlusParser.DeclarationContext decCtx : ctx.declaration()) {
 			declarations.add(visit(decCtx));
 		}
-		
-		//for every statements
+		//STATEMENT VISIT
 		for(SimpLanPlusParser.StatementContext stmCtx : ctx.statement()) {
 			statements.add(visit(stmCtx));
 		}
@@ -47,13 +46,13 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node>{
 		BlockNode res;
 		ArrayList<Node> declarations = new ArrayList<>();
 		ArrayList<Node> statements = new ArrayList<>();
-		
-		//for every declarations
+
+		//DECLARATIONS VISIT
 		for(DecVarContext decCtx : ctx.decVar()) {
 			declarations.add(visit(decCtx));
 		}
-		
-		//for every statements
+
+		//STATEMENT VISIT
 		for(SimpLanPlusParser.StatementContext stmCtx : ctx.statement()) {
 			statements.add(visit(stmCtx));
 		}
@@ -173,50 +172,6 @@ public class SimpLanPlusVisitorImpl extends SimpLanPlusBaseVisitor<Node>{
 		}
 		return res;
 	}
-	/*ArrayList<Node> statIf = new ArrayList<Node>();
-	ArrayList<Node> statElse = new ArrayList<Node>();
-	int contStatIf = 0;
-	IteNode res;
-	int posElse = -1;
-	for(int i = 0; i<ctx.children.size(); i++) {
-		//System.out.println(ctx.children.get(i).getClass().getName());
-		if(ctx.children.get(i).toString().equals("else")) {
-			posElse = i;
-		}
-	}
-	for(int i = 0; i<ctx.children.size(); i++) {
-		if(ctx.children.get(i).getClass().getName().contains("Statement")) {
-			if(i<posElse) {
-				contStatIf++;
-			}	
-		}
-	}
-	for(int i = 0; i<ctx.statement().size(); i++) {
-		if(i<contStatIf) {
-			statIf.add(new StatementNode(visitStatement(ctx.statement().get(i))));
-		} else {
-			statElse.add(new StatementNode(visitStatement(ctx.statement().get(i))));
-		}
-	}*/
-	//System.out.println("Dimenision children" + ctx.children.size());
-	//	System.out.print(posElse);
-	/*for(int i = 0; i<ctx.children.size(); i++) {
-		if(i<=posElse) {
-			if((ctx.statement(i)) != null) {
-				if(ctx.children.get(i).getClass().getName().contains("Statement"))
-					statIf.add(new StatementNode(visitStatement(ctx.statement().get(i))));
-			}
-		} else {
-			if((ctx.statement(i)) != null) {
-				if(ctx.children.get(i).getClass().getName().contains("Statement"))
-					statElse.add(new StatementNode(visitStatement(ctx.statement().get(i))));
-			}
-		}
-	}*/
-	/*res = new IteNode(visit(ctx.exp()),statIf, statElse);
-	return res;*/
-	//}
-
 
 	@Override 
 	public Node visitCall(SimpLanPlusParser.CallContext ctx) {

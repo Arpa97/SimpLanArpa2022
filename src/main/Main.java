@@ -23,8 +23,7 @@ import java.util.ArrayList;
 
 public class Main{
 	public static void main(String[] args) throws Exception {
-		//Lexical Analyzer Ex. 1 - The first part of the function
-		//extracts the lexical errors and print them on a file .txt
+		//LEXICAL ANALYSIS...
 		String filename = "input";
 		InputStream is = new FileInputStream(filename);
 		CharStream input = CharStreams.fromStream(is);
@@ -34,9 +33,7 @@ public class Main{
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		SimpLanPlusParser parser = new SimpLanPlusParser(tokens);
 		parser.addErrorListener(listener);
-		//Symbol Table Ex. 2 - The second part of the function
-		//creates the Symbol table implemented as list of hash
-		//(visible inside the file Environment.java)
+		//SYMBLE TABLE
 		SimpLanPlusVisitorImpl visitor = new SimpLanPlusVisitorImpl();
 		Node ast = visitor.visit(parser.program());
 		Environment env = new Environment();		
@@ -48,9 +45,9 @@ public class Main{
 			}
 		}else{
 			ast.typeCheck();
-			System.out.println(ast.toPrint(""));
+			System.out.println(ast.printer(""));
 
-			// Code Generation
+			// CODE GEN
 			System.out.println("Generating code...");
 			String code=ast.codeGeneration();
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename+".asm"));

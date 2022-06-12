@@ -12,7 +12,7 @@ public class DecFunNode implements Node {
 	private ArrayList<Node> args;
 	private Node block;
 	private STentry entry;
-	private String fEntry = SimpLanPlusLib.freshFunLabel();
+	private String fEntry = SimpLanPlusLib.newFunLabel();
 
 	public DecFunNode(Node type, IdNode idNode, ArrayList<Node> args, Node block) {
 		this.type = type;
@@ -22,18 +22,18 @@ public class DecFunNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		String stringa = "DecFun ";
 		if(type != null) {
-			stringa += type.toPrint(indent) + " ";
+			stringa += type.printer(indent) + " ";
 		}
-		stringa += idNode.toPrint(indent) + " Args(";
+		stringa += idNode.printer(indent) + " Args(";
 		for(int i = 0;i < args.size();i++) {
-			stringa += args.get(i).toPrint(indent) + " ";
+			stringa += args.get(i).printer(indent) + " ";
 			if(i < (args.size() - 1))
 				stringa += ",";
 		}
-		stringa += ") " + block.toPrint(indent);
+		stringa += ") " + block.printer(indent);
 		return indent + stringa + "\n";
 	}
 
@@ -56,7 +56,7 @@ public class DecFunNode implements Node {
 		}else{
 			Node retType = block.typeCheck();
 			if(retType == null) {
-				System.err.println("The function must return " + type.toPrint(""));
+				System.err.println("The function must return " + type.printer(""));
 				System.exit(-1);
 			}
 			if (!(SimpLanPlusLib.isSubtype(retType,type))){
@@ -100,11 +100,11 @@ public class DecFunNode implements Node {
 		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
 		HashMap<String,STentry> hm = env.getSymTable().get(env.getNestingLevel());
 		entry = new STentry(env.getNestingLevel(),type,env.getOffset(),true);
-		env.decrementOffset();
+		env.decreaseOffset();
 		if(hm.put(idNode.getId(),entry) != null) {
 			output.add(new SemanticError(idNode.getId()+" is already declared."));
 		}else{
-			env.incrementNestingLevel();
+			env.increaseNesting();
 			HashMap<String,STentry> hmn = new HashMap<String,STentry>();
 			env.getSymTable().add(hmn);
 			HashMap<ArgNode,TypeNode> parTypes = new HashMap<ArgNode,TypeNode>();
@@ -139,7 +139,7 @@ public class DecFunNode implements Node {
 			entry.setReference(this);
 			entry.addType(new ArrowTypeNode(parTypes,type,entryArgs));
 		    env.getSymTable().remove(env.getNestingLevel());
-			env.decrementNestingLevel();
+			env.decreaseNesting();
 			if(block != null)
 				output.addAll(block.checkSemantics(env));
 		}

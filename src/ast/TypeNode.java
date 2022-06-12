@@ -12,7 +12,7 @@ public class TypeNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		return indent +"Type " + text ;
 	}
 

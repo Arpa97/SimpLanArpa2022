@@ -14,8 +14,8 @@ public class DerExpNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent + "DerExpNode " + id.toPrint(indent) + "\n";
+	public String printer(String indent) {
+		return indent + "DerExpNode " + id.printer(indent) + "\n";
 	}
 
 	@Override

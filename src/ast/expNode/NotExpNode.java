@@ -14,8 +14,8 @@ public class NotExpNode extends BaseExpNode {
 	}
 	
 	@Override
-	public String toPrint(String indent) {
-		return indent + "NotExpNode " + "!" + expr.toPrint(indent) + "\n";
+	public String printer(String emptySpace) {
+		return emptySpace + "NotExpNode " + "!" + expr.printer(emptySpace) + "\n";
 	}
 
 	@Override

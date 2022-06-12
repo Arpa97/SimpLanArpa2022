@@ -6,33 +6,33 @@ import util.Environment;
 import util.SemanticError;
 
 public class CallExpNode implements Node {
-	public Node visitCall;
+	public Node visit;
 
-	public CallExpNode(Node visitCall) {
-		this.visitCall = visitCall;
+	public CallExpNode(Node visit) {
+		this.visit = visit;
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent + "Call " + visitCall.toPrint(indent) + "\n";
+	public String printer(String indent) {
+		return indent + "Call " + visit.printer(indent) + "\n";
 	}
 
 	@Override
 	public Node typeCheck() {
-		return visitCall.typeCheck();
+		return visit.typeCheck();
 	}
 
 	@Override
 	public String codeGeneration() {
-		return visitCall.codeGeneration();
+		return visit.codeGeneration();
 	}
 
 	@Override
 	public ArrayList<SemanticError> checkSemantics(Environment env) {
-		return visitCall.checkSemantics(env);
+		return visit.checkSemantics(env);
 	}
 
 	public Node getCall() {
-		return visitCall;
+		return visit;
 	}
 }

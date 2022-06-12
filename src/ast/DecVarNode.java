@@ -21,10 +21,10 @@ public class DecVarNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		String stringa = " DecVar "+ type.toPrint(indent) + " " + idNode.toPrint(indent);
+	public String printer(String indent) {
+		String stringa = " DecVar "+ type.printer(indent) + " " + idNode.printer(indent);
 		if(exp != null) {
-			stringa += " = " + exp.toPrint(indent);
+			stringa += " = " + exp.printer(indent);
 		}
 		return indent + stringa +"\n";
 	}
@@ -72,7 +72,7 @@ public class DecVarNode implements Node {
         }
         if(exp != null)
         	entry.getEffect().setInitialized();
-        env.decrementOffset();
+        env.decreaseOffset();
         entryVariable = entry;
 		return output;
 	}

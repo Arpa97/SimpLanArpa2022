@@ -16,13 +16,13 @@ public class ProgramNode implements Node{
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		String declstr = "";
 		String statstr = "";
 		for(Node dec: declarations)
-			declstr += dec.toPrint(indent);
+			declstr += dec.printer(indent);
 		for(Node stat: statements)
-			statstr += stat.toPrint(indent);
+			statstr += stat.printer(indent);
 		return indent + "Main program\n" +  declstr + statstr+ "\n";
 	}
 
@@ -244,7 +244,7 @@ public class ProgramNode implements Node{
 
 	@Override
 	public ArrayList<SemanticError> checkSemantics(Environment env){
-		env.incrementNestingLevel();
+		env.increaseNesting();
 		HashMap<String,STentry> hm = new HashMap<String,STentry>();
 		env.getSymTable().add(hm);
 		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
@@ -268,7 +268,7 @@ public class ProgramNode implements Node{
 			}
 		}
 		env.getSymTable().remove(env.getNestingLevel());
-		env.decrementNestingLevel();
+		env.decreaseNesting();
 		return output;
 	}
 }

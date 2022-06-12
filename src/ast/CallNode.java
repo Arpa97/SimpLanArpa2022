@@ -15,7 +15,6 @@ public class CallNode implements Node {
 	private ArrowTypeNode t = null;
 	private int nlCall;
 	private String f_entry;
-	private int nlDec;
 
 	
 	public CallNode(IdNode idNode, ArrayList<Node> expressions) {
@@ -28,12 +27,12 @@ public class CallNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		String stringa = "Call " + idNode.toPrint(indent) + "(";
+	public String printer(String indent) {
+		String stringa = "Call " + idNode.printer(indent) + "(";
 		int i = 0;
 		if(expressions != null) {
 		for(Node n:expressions) {
-			stringa += n.toPrint(indent);
+			stringa += n.printer(indent);
 			if(i < (expressions.size() - 1))
 				stringa += ",";
 			i++;
@@ -50,32 +49,25 @@ public class CallNode implements Node {
 	public Node typeCheck() {
 		HashMap<ArgNode,TypeNode> p = t.getParList();
 	     if ( !(p.size() == expressions.size() )) {
-    		 System.err.println("Wrong number of parameters in the invocation of "+idNode.getId());
+    		 System.err.println("ERROR: Invocation of "+idNode.getId() + "with wrong parameter number: should be "+ p.size() + "but is " + expressions.size() +"\n" );
     		 System.exit(0);
     	 }
-    	 int cont=0;
+    	 int typeCounter=0;
     	 for (Entry<ArgNode,TypeNode> par: p.entrySet()) {
-    		 if(!(SimpLanPlusLib.isSubtype(expressions.get(cont).typeCheck(), par.getValue()))) {
-    			 if((cont+1) == 1)
-    			 	System.err.println("Wrong type for "+(cont+1)+"-st parameter in the invocation of "+idNode.getId());
-    			 if((cont+1) == 2)
-    			 	System.err.println("Wrong type for "+(cont+1)+"-nd parameter in the invocation of "+idNode.getId());
-    			 if((cont+1) == 3)
-    			 	System.err.println("Wrong type for "+(cont+1)+"-rd parameter in the invocation of "+idNode.getId());
-    			 if((cont+1) > 3)
-    			 	System.err.println("Wrong type for "+(cont+1)+"-th parameter in the invocation of "+idNode.getId());
+    		 if(!(SimpLanPlusLib.isSubtype(expressions.get(typeCounter).typeCheck(), par.getValue()))) {
+				 System.err.println("Wrong type for parameter at position " +(typeCounter+1)+ " in the invocation of "+idNode.getId());
     			 System.exit(-1);
     		 }
     		 ArgNode argument = par.getKey();
     		 STentry entryArgument = argument.getEntry();
     		 entryArgument.getEffect().setInitialized();
     		 if(argument.getVar()) {
-    			 if(expressions.get(cont).getClass().getName().contains("DerExpNode")) {
-    				 DerExpNode variable = (DerExpNode)(expressions.get(cont));
+    			 if(expressions.get(typeCounter).getClass().getName().contains("DerExpNode")) {
+    				 DerExpNode variable = (DerExpNode)(expressions.get(typeCounter));
     				 argument.setEntry(variable.getIdNode().getEntry());
     			 }
     		 }
-    		 cont++;
+    		 typeCounter++;
     	 }
     	 for(Node exp:expressions) {
     		 if(exp.getClass().getName().contains("DerExpNode")) {
@@ -93,17 +85,13 @@ public class CallNode implements Node {
 		for (int i=0; i< expressions.size(); i++)
 			parameters += expressions.get(i).codeGeneration() // r1 <- cgen(stable, e(i)) i in 1, exp.size() - 1; s -> s[e(i)]
 					+ "lr1\n" ;      // r1 -> top_of_stack; s -> [e(i), .., e(0), fp]
-
-
 		String ar = "";
 		for(int i = 0; i < this.nlCall - entry.getNestinglevel(); i++ ){
 			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
 		}
-
 		if(this.f_entry == null){
 			this.f_entry = this.entry.getReference().getfEntry();
 		}
-
 		return "lfp\n"+ 				// push $fp to save it in the stack [fp]
 				"lfp\n" +                        // fp -> top_of_stack :: s -> [al, fp]
 				"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> [fp]
@@ -154,7 +142,8 @@ public class CallNode implements Node {
 		       	if(par.getKey().getVar()){
 		       		if(expressions.get(cont) != null) {
 		       			if(!(expressions.get(cont).getClass().getName().contains("DerExpNode"))) {
-		       				output.add(new SemanticError("The argument " +par.getKey().getId()+ " of the function requests var"));
+		       				output.add(new SemanticError("Missing reference to variable for " +par.getKey().getId()+
+									" argument in function"));
 		       			}
 		       		}
 		       	}

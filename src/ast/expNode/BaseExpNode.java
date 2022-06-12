@@ -3,15 +3,16 @@ package ast.expNode;
 import ast.Node;
 
 public class BaseExpNode extends ExpNode {
-	private Node visit;
+
+	private Node node;
 	
-	public BaseExpNode(Node visit) {
-		super(visit);
-		this.visit=visit;
+	public BaseExpNode(Node nod) {
+		super(nod);
+		this.node=nod;
 	}
 	
 	@Override
-	public String toPrint(String indent) {
-		return indent + "BaseExpNode (" + visit.toPrint(indent) + ")" + "\n";
+	public String printer(String emptySpace) {
+		return emptySpace + "BaseExpNode (" + node.printer(emptySpace) + ")" + "\n";
 	}
 }

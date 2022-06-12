@@ -15,13 +15,13 @@ public class BlockNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent){
+	public String printer(String indent){
 		String declstr = "";
 		String statstr = "";
 		for(Node dec: declarations)
-			declstr += dec.toPrint(indent);
+			declstr += dec.printer(indent);
 		for(Node stat: statements)
-			statstr += stat.toPrint(indent);
+			statstr += stat.printer(indent);
 		return indent + "Block\n" + "Declarations: " + declstr + "\nStatements:" + statstr + "\n";
 	}
 
@@ -267,7 +267,7 @@ public class BlockNode implements Node {
 
 	@Override
 	public ArrayList<SemanticError> checkSemantics(Environment env){
-		env.incrementNestingLevel();
+		env.increaseNesting();
 		HashMap<String,STentry> hm = new HashMap<String,STentry>();
 		env.getSymTable().add(hm);
 		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
@@ -290,7 +290,7 @@ public class BlockNode implements Node {
 			}
 		}
 		env.getSymTable().remove(env.getNestingLevel());
-		env.decrementNestingLevel();
+		env.decreaseNesting();
 		return output;
 	}
 

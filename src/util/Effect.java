@@ -1,35 +1,37 @@
 package util;
 
 public class Effect {
-	private int status;
+	private int val;
 
 	public Effect(boolean initialized) {
+		//check to set a variable initialized by constructor
+		//in this way, we do not need to do further instruction to initialize a variable
 		if(initialized == true)
-			this.status = 1;
+			this.val = 1;
 		else 
-			this.status = 0;
+			this.val = 0;
 			
 	}
 
-	public boolean isLess(Effect e) {
-		return this.status < e.status;
-	}
-
+	//Set method to initialize a variable
 	public void setInitialized() {
-		if(this.status < 1)
-			this.status = 1;
+		if(this.val < 1)
+			this.val = 1;
 	}
-
+	//Set method to sign a variable as Used
 	public void setUsed() {
-		if(this.status >= 1)
-			this.status = 2;
+		if(this.val >= 1)
+			this.val = 2;
 	}
 
+	//Set method to directly set a value. Used to reset value to 0
+	public void setValue(int value) {
+		this.val = value;
+	}
+
+	//Getter method
 	public int getValue() {
-		return this.status;
+		return this.val;
 	}
 
-  public void setValue(int value) {
-	  this.status = value;
-  }
 }

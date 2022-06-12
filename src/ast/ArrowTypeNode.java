@@ -16,12 +16,11 @@ public class ArrowTypeNode implements Node {
     this.entrylist = entrylist;
   }
 
-  //DA CONTROLLARE SE QUESTA TOPRINT VIENE STAMPATA
-  public String toPrint(String s) {
+  public String printer(String s) {
 	String parlstr="";
     for (Entry<ArgNode,TypeNode> par: parlist.entrySet())
-      parlstr+=par.getKey().toPrint(s+"  ");
-	return s+"ArrowType\n" + parlstr + ret.toPrint(s+"  ->") ; 
+      parlstr+=par.getKey().printer(s+"  ");
+	return s+"ArrowType\n" + parlstr + ret.printer(s+"  ->") ;
   }
 
   @Override

@@ -14,7 +14,7 @@ public class ValExpNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		return indent+ "ValueExpNode "+this.expVal	+ "\n";
 	}
 

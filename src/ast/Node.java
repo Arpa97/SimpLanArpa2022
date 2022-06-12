@@ -7,7 +7,7 @@ import util.SemanticError;
 
 public interface Node {
    
-  String toPrint(String indent);
+  String printer(String indent);
 
   
   Node typeCheck();

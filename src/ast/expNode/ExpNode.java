@@ -16,8 +16,8 @@ public class ExpNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent + "ExpNode " + expr.toPrint(indent) + "\n";
+	public String printer(String indent) {
+		return indent + "ExpNode " + expr.printer(indent) + "\n";
 	}
 
 	@Override

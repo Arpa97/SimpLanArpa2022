@@ -18,11 +18,11 @@ public class ArgNode implements Node{
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		String stringa = "Arg ";
 		if(var == true)
 			stringa += "var" + " ";
-		stringa += type.toPrint(indent) + " " + idNode.toPrint(indent) + " ";
+		stringa += type.printer(indent) + " " + idNode.printer(indent) + " ";
 		return indent + stringa + "\n";
 	}
 
@@ -45,7 +45,7 @@ public class ArgNode implements Node{
 		entry = new STentry(flag,type,env.getOffset(),false);
 		if(hm.put(idNode.getId(),entry) != null)
 			output.add(new SemanticError("The argument "+idNode.getId()+" is already defined."));
-		env.decrementOffset();
+		env.decreaseOffset();
 		return output;
 	}
 	

@@ -13,8 +13,8 @@ public class DeclarationNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent +"Declaration "+ dec.toPrint(indent) + "\n";
+	public String printer(String indent) {
+		return indent +"Declaration "+ dec.printer(indent) + "\n";
 	}
 
 	@Override

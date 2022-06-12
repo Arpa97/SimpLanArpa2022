@@ -19,13 +19,13 @@ public class IteNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String printer(String indent) {
 		String stringa = "if(";
 		if(exp != null)
-			stringa += exp.toPrint(indent);
-		stringa += "){\n" + then_statement.toPrint(indent) + "\n}";
+			stringa += exp.printer(indent);
+		stringa += "){\n" + then_statement.printer(indent) + "\n}";
 		if(else_statement != null)
-			stringa += "else{\n" + else_statement.toPrint(indent)+ "\n}";
+			stringa += "else{\n" + else_statement.printer(indent)+ "\n}";
 		return indent + stringa + "\n";
 	}
 
@@ -61,8 +61,8 @@ public class IteNode implements Node {
 	@Override
 	public String codeGeneration() {
 
-		String true_branch  = SimpLanPlusLib.freshLabel();
-		String end_if = SimpLanPlusLib.freshLabel();
+		String true_branch  = SimpLanPlusLib.newLabel();
+		String end_if = SimpLanPlusLib.newLabel();
 
 		if (else_statement != null){
 			return this.exp.codeGeneration() +          //r1 = cgen(stable, e)

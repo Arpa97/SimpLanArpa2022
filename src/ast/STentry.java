@@ -46,7 +46,7 @@ public class STentry {
  
   public String toPrint(String s) { //
 	   return s+"STentry: nestlev " + Integer.toString(nl) +"\n"+
-			  s+"STentry: type" +  type.toPrint(s+"  ") + 
+			  s+"STentry: type" +  type.printer(s+"  ") +
 		      s+"\nSTentry: offset " + Integer.toString(offset) + "\n"+
 		      s+"STentry: initialized is " + (effect.getValue() < 1) + "\n"+
 	   		  s+"STentry: used is " + (effect.getValue() < 2) + "\n";

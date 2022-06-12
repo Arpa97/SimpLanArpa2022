@@ -7,22 +7,23 @@ import util.Environment;
 import util.SemanticError;
 
 public class BoolExpNode implements Node {
-	private boolean parseBoolean;
 
-	public BoolExpNode(boolean parseBoolean) {
-		this.parseBoolean = parseBoolean;
+	private boolean boolP;
+
+	public BoolExpNode(boolean boolP) {
+		this.boolP = boolP;
 	}
 	
 	@Override
 	public ArrayList<SemanticError> checkSemantics(Environment env){
-		return new ArrayList<SemanticError>();
+		return new ArrayList<>();
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		if(parseBoolean == true)
-			return "Bool: true" + "\n";
-		return "Bool: false" + "\n";
+	public String printer(String indent) {
+		if(boolP == true)
+			return "true" + "\n";
+		return "false" + "\n";
 	}
 
 	@Override
@@ -32,10 +33,10 @@ public class BoolExpNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "lir1" + (parseBoolean?1:0)+"\n";
+		return "lir1" + (boolP ?1:0)+"\n";
 	}
 
 	public boolean getBoolExp() {
-		return parseBoolean;
+		return boolP;
 	}
 }

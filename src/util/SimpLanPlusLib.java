@@ -3,29 +3,28 @@ package util;
 import ast.Node;
 
 public class SimpLanPlusLib {
-	private static int labCount=0;  
-	private static int funLabCount=0; 
-	private static String funCode="";
+	private static int labelC =0;
+	private static int funLabC =0;
+	private static String codeFun ="";
 
-	//valuta se il tipo "a" <= al tipo "b", dove "a" e "b" sono tipi di base: int o bool
+	//Check if type of node a is subtype (<=) of type b
 	public static boolean isSubtype (Node a, Node b) {
-		return a.toPrint("").equals(b.toPrint("")) ; //||
-	    // ( (a instanceof BoolTypeNode) && (b instanceof IntTypeNode) ); //
-	} 
-	  
-	  public static String freshLabel() { 
-		return "label"+(labCount++);
-	  } 
+		return a.printer("").equals(b.printer("")) ;
+	}
 
-	  public static String freshFunLabel() { 
-		return "function"+(funLabCount++);
-	  } 
-	  
-	  public static void putCode(String c) { 
-	    funCode+="\n"+c; //aggiunge una linea vuota di separazione prima di funzione
-	  } 
-	  
-	  public static String getCode() { 
-	    return funCode;
-	  } 
+	public static String newLabel() {
+	return "label"+(labelC++);
+	}
+
+	public static String newFunLabel() {
+	return "function"+(funLabC++);
+	}
+
+	public static void putCode(String c) {
+	codeFun +="\n"+c; //aggiunge una linea vuota di separazione prima di funzione
+	}
+
+	public static String getCode() {
+	return codeFun;
+	}
 }
