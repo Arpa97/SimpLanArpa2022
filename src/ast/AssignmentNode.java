@@ -45,6 +45,26 @@ public class AssignmentNode implements Node {
 
 	@Override
 	public String codeGeneration() {
+		if(idNode instanceof IdNode){
+			IdNode idGen = (IdNode) idNode;
+			STentry entry = idGen.getEntry();
+			//int counterST = ((LhsNode<?>) lhs).getCounterST();
+			if(idGen.getId() instanceof String){
+
+				String ar = "";
+				for(int i = 0; i < this.entryVariable.getNestinglevel() - entry.getNestinglevel(); i++ ){
+					ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
+				}
+				return  exp.codeGeneration() +           // r1 <- cgen(stable, exp) s -> []
+						"lfp\n" +                        // fp -> top_of_stack :: s -> [fp]
+						"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> []
+						//"lwafp 0\n" +                        // fp -> top_of_stack :: s -> [fp]
+						ar     +                        // lw al 0(al) :: al = MEMORY[al + 0] to check the AR; s -> []
+						"sw1 "+ entry.getOffset()+"\n";  // sw r1 entry.offset(al) :: r1 <- MEMORY[al + entry.offset]; s -> []
+
+			}
+		}
+		// is always an LhsNode if come here
 		return "";
 	}
 

@@ -7,6 +7,7 @@ import util.SemanticError;
 public class IdNode implements Node {
 	private String id;
 	private STentry entry;
+	private int nLevel_id;
 	
 	public IdNode(String text) {
 		id = text;
@@ -27,10 +28,9 @@ public class IdNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		int nestingLevel = entry.getNestinglevel();
 		// ID case
 		String ar = "";
-		for(int i = 0; i < nestingLevel - entry.getNestinglevel(); i++ ){
+		for(int i = 0; i < nLevel_id - entry.getNestinglevel(); i++ ){
 			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
 		}
 		return "lfp\n" +                        // fp -> top_of_stack :: s -> [fp]
@@ -52,6 +52,7 @@ public class IdNode implements Node {
 	    	output.add(new SemanticError("Id "+id+" not declared"));
 	    }else{
 	    	entry = tmp;
+			this.nLevel_id = env.getNestingLevel();
 	    }
 		return output;
 	}
@@ -66,5 +67,13 @@ public class IdNode implements Node {
 
 	public String getId() {
 		return id;
+	}
+
+	public int getnLevel_id() {
+		return nLevel_id;
+	}
+
+	public void setnLevel_id(int nLevel_id) {
+		this.nLevel_id = nLevel_id;
 	}
 }

@@ -225,7 +225,7 @@ public class ProgramNode implements Node{
 		code += "cfp\n";      //setta fp<-sp
 
 		for (Node dec : declarations){
-			code += "push0\n";              //s->[d(0) ... d(n)] 
+			code += "push 0\n";              //s->[d(0) ... d(n)] 
 			code += dec.codeGeneration();   //cgen(stable, dec)     s->[d(0) .. d(n), al, fp]
 		}
 

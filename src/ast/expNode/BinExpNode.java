@@ -95,7 +95,161 @@ public class BinExpNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		
+		if(operator.contains("'&&'")){
+			return second.codeGeneration() +     //r1 <- cgen(stable, right)                 S->[]
+					"lr1\n"+                    //r1 -> top of Stack        S->right        S->[r1]
+					first.codeGeneration() +     //r2 <- cgen(stable, left)                  S->[r1]
+					"sr2\n"+                    //r2 -> top of Stack        r2<-right       S->[]    
+					"and\n";              // add r1 <- r1 && r2       left op right   S->[] 
+		}
+		
+		if(operator.contains("'||'")){
+			return second.codeGeneration() +     //r1 <- cgen(stable, right)                 S->[]
+					"lr1\n"+                    //r1 -> top of Stack        S->right        S->[r1]
+					first.codeGeneration() +     //r2 <- cgen(stable, left)                  S->[r1]
+					"sr2\n"+                    //r2 -> top of Stack        r2<-right       S->[]    
+					"or\n";              // add r1 <- r1 || r2       left op right   S->[]
+		}
+		
+		if(operator.contains("'/'")){
+			return second.codeGeneration()+
+					"lr1\n"+
+					first.codeGeneration()+
+					"sr2\n"+
+					"div\n";
+		}
+		
+		if(operator.contains("'=='")){
+			String true_branch = SimpLanPlusLib.freshFunLabel();
+			String end_if = SimpLanPlusLib.freshFunLabel();
+			return second.codeGeneration() +
+					"lr1\n" +
+					first.codeGeneration() +
+					"sr2\n" +
+					"beq " + true_branch + "\n" +
+					"lir1 0\n" +
+					"b " + end_if + "\n" +
+					true_branch + ":\n" +
+					"lir1 1\n" +
+					end_if + ":\n";
+		}
+		
+		if(operator.contains("'>='")){
+			//bleq $r1 $r2      salta al label se r1 <= r2
+			//caso nostro left >= right         left = r2, right = r1
+			String true_branch = SimpLanPlusLib.freshLabel();
+			String end_if = SimpLanPlusLib.freshLabel();
+
+
+			return first.codeGeneration() +
+					"lr1\n" +
+					second.codeGeneration() +
+					"sr2\n" +                   //r2 = left, r1 = right
+					"bleq " + true_branch + "\n" +
+					"lir1 0\n" +                  //caso falso, r1<-0
+					"b " + end_if + "\n" +
+					true_branch + ":\n" +
+					"lir1 1\n" +                 //caso true, r1<-1
+					end_if + ":\n";
+		}
+
+		if(operator.contains("'>'")){
+			//bleq $r1 $r2      salta al label se r1 < r2
+			//caso nostro left > right         left = r2, right = r1
+			String true_branch = SimpLanPlusLib.freshLabel();
+			String end_if = SimpLanPlusLib.freshLabel();
+
+
+			return first.codeGeneration() +
+					"lr1\n" +
+					second.codeGeneration() +
+					"sr2\n" +                   //r2 = left, r1 = right
+					"bless " + true_branch + "\n" +
+					"lir1 0\n" +                  //caso falso, r1<-0
+					"b " + end_if + "\n" +
+					true_branch + ":\n" +
+					"lir1 1\n" +                 //caso true, r1<-1
+					end_if + ":\n";
+		}
+		
+		if(operator.contains("'<='")){
+			//bleq $r1 $r2      salta al label se r1 <= r2
+			//caso nostro left >= right         left = r1, right = r2
+			String true_branch = SimpLanPlusLib.freshLabel();
+			String end_if = SimpLanPlusLib.freshLabel();
+
+
+			return second.codeGeneration() +
+					"lr1\n" +
+					first.codeGeneration() +
+					"sr2\n" +                   //r2 = right, r1 = left
+					"bleq " + true_branch + "\n" +
+					"lir1 0\n" +                  //caso falso, r1<-0
+					"b " + end_if + "\n" +
+					true_branch + ":\n" +
+					"lir1 1\n" +                 //caso true, r1<-1
+					end_if + ":\n";
+		}
+
+		if(operator.contains("'<'")){
+			//bleq $r1 $r2      salta al label se r1 < r2
+			//caso nostro left > right         left = r1, right = r2
+			String true_branch = SimpLanPlusLib.freshLabel();
+			String end_if = SimpLanPlusLib.freshLabel();
+
+
+			return second.codeGeneration() +
+					"lr1\n" +
+					first.codeGeneration() +
+					"sr2\n" +                   //r2 = right, r1 = left
+					"bless " + true_branch + "\n" +
+					"lir1 0\n" +                  //caso falso, r1<-0
+					"b " + end_if + "\n" +
+					true_branch + ":\n" +
+					"lir1 1\n" +                 //caso true, r1<-1
+					end_if + ":\n";
+		}
+
+		if(operator.contains("'-'")){
+			return second.codeGeneration()+
+					"lr1\n"+
+					first.codeGeneration()+
+					"sr2\n"+
+					"sub\n";
+		}
+
+		if(operator.contains("'*'")){
+			return second.codeGeneration()+
+					"lr1\n"+
+					first.codeGeneration()+
+					"sr2\n"+
+					"mul\n";
+		}
+		
+		if(operator.contains("'!='")){
+			String eq_branch = SimpLanPlusLib.freshFunLabel();
+			String end_if = SimpLanPlusLib.freshFunLabel();
+			return second.codeGeneration() +
+					"lr1\n" +
+					first.codeGeneration() +
+					"sr2\n" +
+					"beq " + eq_branch + "\n" +
+					"lir1 1\n" +                    //caso not equal: si setta r1 a 1 (true)
+					"b " + end_if + "\n" +
+					eq_branch + ":\n" +
+					"lir1 0\n" +                    //caso equal: si setta r1 a 0 (false)
+					end_if + ":\n";
+		}
+
+		if(operator.contains("'+'")){
+			return second.codeGeneration()+
+					"lr1\n"+
+					first.codeGeneration()+
+					"sr2\n"+
+					"add\n";
+		}
+		else return "";
 	}
 
 	public Node getFirst() {

@@ -9,6 +9,8 @@ public class STentry {
   private int offset;
   private Effect effect;
   
+  private DecFunNode reference;
+  
   public STentry (int nl, int offset,boolean initialized){
 	  this.nl = nl;
 	  this.offset = offset;
@@ -49,4 +51,12 @@ public class STentry {
 		      s+"STentry: initialized is " + (effect.getValue() < 1) + "\n"+
 	   		  s+"STentry: used is " + (effect.getValue() < 2) + "\n";
   }
+
+    public void setReference(DecFunNode reference){
+        this.reference = reference; // reference to the function declaration
+    }
+
+    public DecFunNode getReference(){
+        return this.reference;
+    }
 }  

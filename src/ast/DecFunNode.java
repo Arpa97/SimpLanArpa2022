@@ -12,6 +12,7 @@ public class DecFunNode implements Node {
 	private ArrayList<Node> args;
 	private Node block;
 	private STentry entry;
+	private String fEntry = SimpLanPlusLib.freshFunLabel();
 
 	public DecFunNode(Node type, IdNode idNode, ArrayList<Node> args, Node block) {
 		this.type = type;
@@ -68,7 +69,30 @@ public class DecFunNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		return "";
+		String out = "";
+		String popPar = "";
+
+		if(this.args.size() > 0){
+			for(Node par : args)
+				popPar += "pop\n";
+		}
+		//this.fEntry = SimpLanlib.freshFunLabel();
+		SimpLanPlusLib.putCode(
+				// s -> [ra, e(n), .., e(0), al, fp]
+				this.fEntry + ":" + "\n" +
+						// "cfp\n" +                  // fp <- sp; s -> [ra, e(n), .., e(0), al, fp]
+						//"lra\n" +                  //
+						block.codeGeneration() +  // r1 <- cgen(stable, block); s -> [ra, x(1).... x(n),al, fp]; fp <- b.fp; al <- b.al;
+						"sra\n" +                 // ra <- top_of_stack; s -> [e(n), .., e(0), al, fp]
+						popPar +                  // pop of the caller parameters; s -> [al, fp]
+						"pop\n" +                 // remove al from stack,  s -> [al, fp]
+						"sfp\n"+                 // fp <- top_of_stack; s -> [fp]
+						"jr\n");                // jump to ra; ra = ip_caller + 1 instruction; s -> []
+
+
+		return  out ;
+		// return "push "+ this.fEntry +"\n";
+		
 	}
 
 	@Override
@@ -112,6 +136,7 @@ public class DecFunNode implements Node {
 		    	}*/
 		    }
 			block1.setDeclarations(declarations);
+			entry.setReference(this);
 			entry.addType(new ArrowTypeNode(parTypes,type,entryArgs));
 		    env.getSymTable().remove(env.getNestingLevel());
 			env.decrementNestingLevel();
@@ -127,5 +152,13 @@ public class DecFunNode implements Node {
 
 	public STentry getEntry() {
 		return entry;
+	}
+
+	public String getfEntry() {
+		return fEntry;
+	}
+
+	public void setfEntry(String fEntry) {
+		this.fEntry = fEntry;
 	}
 }

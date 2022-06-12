@@ -13,6 +13,9 @@ public class CallNode implements Node {
 	private ArrayList<Node> expressions;
 	private STentry entry;
 	private ArrowTypeNode t = null;
+	private int nlCall;
+	private String f_entry;
+	private int nlDec;
 
 	
 	public CallNode(IdNode idNode, ArrayList<Node> expressions) {
@@ -86,7 +89,35 @@ public class CallNode implements Node {
 	
 	@Override
 	public String codeGeneration() {
-		return "";
+		String parameters = "" ;
+		for (int i=0; i< expressions.size(); i++)
+			parameters += expressions.get(i).codeGeneration() // r1 <- cgen(stable, e(i)) i in 1, exp.size() - 1; s -> s[e(i)]
+					+ "lr1\n" ;      // r1 -> top_of_stack; s -> [e(i), .., e(0), fp]
+
+
+		String ar = "";
+		for(int i = 0; i < this.nlCall - entry.getNestinglevel(); i++ ){
+			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
+		}
+
+		if(this.f_entry == null){
+			this.f_entry = this.entry.getReference().getfEntry();
+		}
+
+		return "lfp\n"+ 				// push $fp to save it in the stack [fp]
+				"lfp\n" +                        // fp -> top_of_stack :: s -> [al, fp]
+				"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> [fp]
+				ar     +                        // lw al 0(al) :: al = MEMORY[al + 0] to check the AR; s -> [fp]
+				//  "lw1 "+ entry.getOffset()+"\n"+  // lw r1 entry.offset(al) :: r1 <- MEMORY[entry.offset + al]; s -> [fp]
+				// "lr1\n"+ //inserisco activation link in stack
+				"lal\n"+ //load the access link into the top of the stack; al -> top_of_stack; s -> [al,fp]
+				parameters +            // cgen(stable, exp.get(i)) :: for i in exp.size() - 1 to 0; s-> [e(n), .., e(0),al, fp]
+				"mfp " + expressions.size() + "\n" +   // move sp in fp
+				"cra\n"  +              // ra <- ip + 4
+				"lra\n" +               // push ra in the stack
+				"b " + f_entry + "\n";  // doing js on the address ra; ip <- ra; s -> [ra, e(n), .., e(0), al, fp]
+
+
 	}
 
 	@Override
@@ -94,6 +125,7 @@ public class CallNode implements Node {
 		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
 		STentry flag = null;
 		int i = env.getNestingLevel();
+		nlCall = i;
 		while (i >=0 && flag==null) {
             flag=(env.getSymTable().get(i--)).get(this.idNode.getId());           
 		}

@@ -65,7 +65,7 @@ public class IteNode implements Node {
 		String end_if = SimpLanPlusLib.freshLabel();
 
 		if (else_statement != null){
-			return this.codeGeneration() +          //r1 = cgen(stable, e)
+			return this.exp.codeGeneration() +          //r1 = cgen(stable, e)
 					"lir2 1\n" +
 					"beq " + true_branch + "\n" +           //se r1 = r2 = 1 quindi la condizione è vera, salta a true_branch
 					else_statement.codeGeneration() +       //qui caso else. r1 = cgen(stable, else_stm)
@@ -75,7 +75,7 @@ public class IteNode implements Node {
 					end_if + ":\n";                         //end_if: 
 		} else{
 			//caso in cui non si ha la condizione dell'else branch
-			return  this.codeGeneration() +
+			return  this.exp.codeGeneration() +
 					"lir2 1\n" +
 					"beq  " + true_branch + "\n" +
 					"b " +end_if + "\n" +
