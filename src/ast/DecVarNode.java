@@ -1,83 +1,100 @@
 package ast;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
-import util.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import util.Environment;
+import util.SemanticError;
+import util.SimpLanPlusLib;
+
 public class DecVarNode implements Node {
+	private TypeNode type;
+	private IdNode idNode;
+	private Node exp;
+	private STentry entryVariable;
+	private boolean argument = false;
+	
+	public DecVarNode(Node type, IdNode idNode, Node exp) {
+		this.type = (TypeNode)type;
+		this.idNode = idNode;
+		this.exp = exp;
+	}
 
-    private Node type;
-    private IdNode id;
-    private Node exp;
-    private STentry entry;
-    //private Offset offset;
+	@Override
+	public String toPrint(String indent) {
+		String stringa = " DecVar "+ type.toPrint(indent) + " " + idNode.toPrint(indent);
+		if(exp != null) {
+			stringa += " = " + exp.toPrint(indent);
+		}
+		return indent + stringa +"\n";
+	}
 
-    public DecVarNode(Node type, IdNode id, Node exp){
-        this.type = type;
-        this.id = id;
-        this.exp = exp;
-    }
+	@Override
+	public Node typeCheck() {
+		if(this.exp != null) {
+			Node expType = exp.typeCheck();
+			if(expType != null) {
+				if(!(SimpLanPlusLib.isSubtype(type,expType))) {
+					System.err.println("Type of the variable isn't correct");
+					System.exit(-1);
+				}
+				entryVariable.getEffect().setInitialized();
+			}else {
+				System.err.println("Type of the expression isn't valid.");
+				System.exit(-1);
+			}
+		}
+		return null;
+	}
 
-    public DecVarNode(Node type, IdNode id){
-        this.type = type;
-        this.id = id;
-    }
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
 
-
-    @Override
-    public Node typeCheck() {
-        if(exp != null){
-            if(!(SimpLanPlusLib.isSubtype(type, exp.typeCheck()))){
-                System.out.println("Type id: " + type + ", Exp Type: " + exp.typeCheck());
-                System.out.println("Variable Declaration Error: incompatible value for variable " + id);
-                System.exit(0);
-            }
-            entry.getEffect().setInitialized();
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		if(exp != null) {
+            output.addAll(exp.checkSemantics(env));
+		}
+	    HashMap<String,STentry> hm = env.getSymTable().get(env.getNestingLevel());
+	    STentry entry = new STentry(env.getNestingLevel(),type, env.getOffset(),false); 
+        if(hm.put(idNode.getId(),entry) != null) {
+			output.add(new SemanticError("Var " + idNode.getId()+" is already declared."));
         }
-        System.out.println(entry);
-        
-        return type;
-    }
+        if(exp != null)
+        	entry.getEffect().setInitialized();
+        env.decrementOffset();
+        entryVariable = entry;
+		return output;
+	}
 
-    @Override
-    public String codeGeneration() {
-        if (this.exp != null){
-            //se c'è assegnamento lo si memorizza all'indirizzo dell'offset corrispondente
-            return exp.codeGeneration() +  // r1 = cgen(stable, exp)
-                    "swfp " + entry.getOffset() + "\n";  //sw r1 -> entry.offset($fp)
-        }
-        
-        //se exp è null
-        return "";
-    }
+	public Node getExp() {
+		return exp;
+	}
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-        if(this.exp!=null){
-            res.addAll(this.exp.checkSemantics(env));
-        }
-        
-        HashMap<String, STentry> st = env.symTable.get(env.nestingLevel);
-        STentry entry1 = new STentry(env.nestingLevel, type, env.offset--);
-        if(st.put(this.id.getId(), entry1) != null){
-            res.add(new SemanticError("Variable id "+this.id.getId()+" already declared."));
-        }
-        if(exp != null){
-            entry1.getEffect().setInitialized();
-        }
-       entry = entry1;
-        
-        return res;
-    }
+	public STentry getEntry() {
+		return entryVariable;
+	}
 
-    @Override
-    public String Analyze() {
-        return null;
-    }
-    
-    public STentry getEntry(){ return this.entry;}
+	public void setEntry(STentry entryVariable) {
+		this.entryVariable = entryVariable;
+	}
+
+	public void setExp(Node exp) {
+		this.exp = exp;
+	}
+
+	public IdNode getIdNode() {
+		return idNode;
+	}
+
+	public boolean getArgument() {
+		return argument;
+	}
+
+	public void setArgument() {
+		argument = true;
+	}
 }

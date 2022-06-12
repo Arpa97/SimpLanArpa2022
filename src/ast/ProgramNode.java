@@ -1,300 +1,253 @@
 package ast;
-import util.Environment;
-import util.SemanticError;
-import util.VoidNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import util.Environment;
+import util.SemanticError;
+import ast.expNode.*;
 
 public class ProgramNode implements Node{
+	private ArrayList<Node> declarations;
+	private ArrayList<Node> statements;
+	
+	public ProgramNode(ArrayList<Node> declarations, ArrayList<Node> statements) {
+		this.declarations = declarations;
+		this.statements = statements;
+	}
 
-    private ArrayList<Node> declarations;
-    private ArrayList<Node> statements;
+	@Override
+	public String toPrint(String indent) {
+		String declstr = "";
+		String statstr = "";
+		for(Node dec: declarations)
+			declstr += dec.toPrint(indent);
+		for(Node stat: statements)
+			statstr += stat.toPrint(indent);
+		return indent + "Main program\n" +  declstr + statstr+ "\n";
+	}
 
-    public ProgramNode(ArrayList<Node> declarations, ArrayList<Node> statements) {
-        this.declarations = declarations;
-        this.statements = statements;
-    }
+	@Override
+	public Node typeCheck() {
+		for(Node dec: declarations) {
+			dec.typeCheck();
 
-    public Boolean checkRetValue(){
-        boolean hasRetValue = false;
-        boolean hasElse = false;
-        if (statements.size() > 0) {
-            for (int i = 0; i < statements.size(); i++) {
-                StatementNode stm = (StatementNode) statements.get(i);
-                if (stm.getStatement() instanceof IteNode) {
-                    hasRetValue = ((IteNode) stm.getStatement()).isCheckRetValueIte();
-                    //caso in cui esista anche l'else statement
-                    if (((IteNode) stm.getStatement()).getElse_statement() != null) {
-                        hasElse = true;
-                    }
-                }
-                //se ha UN tipo di ritorno
-                if (stm.getCheckRet()) {
-                    if (hasRetValue && hasElse) {
-                        System.out.println("Program Error: Multiple return conflicts with iteration statement");
-                        System.exit(0);
-                    }
-                    //caso in cui si abbiano più tipi di ritorno nello stesso blocco
-                    if (i != statements.size() - 1) {
-                        System.out.println("Program Error: Multiple return");
-                        System.exit(0);
-                    } else return true;
-                }
-            }
-        }
+		}
+		for(Node stat: statements) {
+			stat.typeCheck();
+			StatementNode stat1 = (StatementNode)stat;
+			Node node = stat1.getStatement();
+			String className = node.getClass().getName();
+			if(className.contains("AssignmentNode")) {
+				AssignmentNode node1 = (AssignmentNode)(node);
+				Node exp = node1.getExp();
+				String className1 = exp.getClass().getName();
+				if(className1.contains("DerExpNode")) {
+					DerExpNode variable = (DerExpNode)(exp);
+					IdNode detailVariable = variable.getIdNode();
+					STentry entryStat = detailVariable.getEntry();
+					if(entryStat.getEffect().getValue() < 1) {
+						System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+						System.exit(-1);
+					}
+				}
+				if(className1.contains("CallExpNode")) {
+					CallExpNode calling = (CallExpNode)(exp);
+					CallNode call = (CallNode)(calling.getCall());
+					ArrayList<Node> expCall = call.getExpressions();
+					for(Node singleExp:expCall) {
+						if(singleExp.getClass().getName().contains("DerExpNode")) {
+							DerExpNode variable = (DerExpNode)singleExp;
+							IdNode detailVariable = variable.getIdNode();
+							STentry entryStat = detailVariable.getEntry();
+							if(entryStat.getEffect().getValue() < 1) {
+								System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+								System.exit(-1);
+							}
+						}
+					}
+				}
+			}
+			if(className.contains("PrintNode")) {
+				PrintNode node1 = (PrintNode)(node);
+				Node exp = node1.getExp();
+				String className1 = exp.getClass().getName();
+				if(className1.contains("DerExpNode")) {
+					DerExpNode variable = (DerExpNode)(exp);
+					IdNode detailVariable = variable.getIdNode();
+					STentry entryStat = detailVariable.getEntry();
+					if(entryStat.getEffect().getValue() < 1) {
+						System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+						System.exit(-1);
+					}
+				}
+				if(className1.contains("CallExpNode")) {
+					CallExpNode calling = (CallExpNode)(exp);
+					CallNode call = (CallNode)(calling.getCall());
+					ArrayList<Node> expCall = call.getExpressions();
+					for(Node singleExp:expCall) {
+						if(singleExp.getClass().getName().contains("DerExpNode")) {
+							DerExpNode variable = (DerExpNode)singleExp;
+							IdNode detailVariable = variable.getIdNode();
+							STentry entryStat = detailVariable.getEntry();
+							if(entryStat.getEffect().getValue() < 1) {
+								System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+								System.exit(-1);
+							}
+						}
+					}
+				}
+			}
+			if(className.contains("RetNode")) {
+				RetNode node1 = (RetNode)(node);
+				Node exp = node1.getExp();
+				if(exp != null) {
+					String className1 = exp.getClass().getName();
+					if(className1.contains("DerExpNode")) {
+						DerExpNode variable = (DerExpNode)(exp);
+						IdNode detailVariable = variable.getIdNode();
+						STentry entryStat = detailVariable.getEntry();
+						if(entryStat.getEffect().getValue() < 1) {
+							System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+							System.exit(-1);
+						}
+					}
+					if(className1.contains("CallExpNode")) {
+						CallExpNode calling = (CallExpNode)(exp);
+						CallNode call = (CallNode)(calling.getCall());
+						ArrayList<Node> expCall = call.getExpressions();
+						for(Node singleExp:expCall) {
+							if(singleExp.getClass().getName().contains("DerExpNode")) {
+								DerExpNode variable = (DerExpNode)singleExp;
+								IdNode detailVariable = variable.getIdNode();
+								STentry entryStat = detailVariable.getEntry();
+								if(entryStat.getEffect().getValue() < 1) {
+									System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+									System.exit(-1);
+								}
+							}
+						}
+					}
+				}
+			}
+			if(className.contains("IteNode")) {
+				IteNode node1 = (IteNode)(node);
+				Node exp = node1.getExp();
+				String className1 = exp.getClass().getName();
+				if(className1.contains("DerExpNode")) {
+					DerExpNode variable = (DerExpNode)(exp);
+					IdNode detailVariable = variable.getIdNode();
+					STentry entryStat = detailVariable.getEntry();
+					if(entryStat.getEffect().getValue() < 1) {
+						System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+						System.exit(-1);
+					}
+				}
+				if(className1.contains("CallExpNode")) {
+					CallExpNode calling = (CallExpNode)(exp);
+					CallNode call = (CallNode)(calling.getCall());
+					ArrayList<Node> expCall = call.getExpressions();
+					for(Node singleExp:expCall) {
+						if(singleExp.getClass().getName().contains("DerExpNode")) {
+							DerExpNode variable = (DerExpNode)singleExp;
+							IdNode detailVariable = variable.getIdNode();
+							STentry entryStat = detailVariable.getEntry();
+							if(entryStat.getEffect().getValue() < 1) {
+								System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+								System.exit(-1);
+							}
+						}
+					}
+				}
+			}
+			if(className.contains("CallNode")) {
+				CallNode node1 = (CallNode)(node);
+				ArrayList<Node> expr = node1.getExpressions();
+				for(int i = 0;i < expr.size();i++){
+					String className1 = expr.get(i).getClass().getName();
+					if(className1.contains("DerExpNode")) {
+						DerExpNode variable = (DerExpNode)(expr.get(i));
+						IdNode detailVariable = variable.getIdNode();
+						STentry entryStat = detailVariable.getEntry();
+						if(entryStat.getEffect().getValue() < 1) {
+							System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+							System.exit(-1);
+						}
+					}
+					if(className1.contains("CallExpNode")) {
+						CallExpNode calling = (CallExpNode)expr.get(i);
+						CallNode nestedCall = (CallNode)(calling.getCall());
+						ArrayList<Node> expNestedCall = nestedCall.getExpressions();
+						for(Node singleExpNested:expNestedCall) {
+							if(singleExpNested.getClass().getName().contains("DerExpNode")) {
+								DerExpNode variable = (DerExpNode)(singleExpNested);
+								IdNode detailVariable = variable.getIdNode();
+								STentry entryStat = detailVariable.getEntry();
+								if(entryStat.getEffect().getValue() < 1) {
+									System.err.println("The value of the variable " + detailVariable.getId() + " isn't defined");
+									System.exit(-1);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for(Node dec:declarations) {
+			DeclarationNode dec1 = (DeclarationNode)(dec);
+			Node dec2 = dec1.getDeclaration();
+			if(dec2.getClass().getName().contains("DecVarNode")) {
+				DecVarNode variable = (DecVarNode)(dec2);
+				STentry entryVariable = variable.getEntry();
+				if(entryVariable.getEffect().getValue() < 2) {
+					System.err.println("The variable " + variable.getIdNode().getId() + " isn't used in the program.");
+					System.exit(-1);
+				}
+			}/*else{
+				if(dec2.getClass().getName().contains("DecFunNode")){
+					DecFunNode function = (DecFunNode)(dec2);
+					STentry entryFunction = function.getEntry();
+					if(entryFunction.getEffect().getValue() < 2) {
+						System.err.println("The function " + function.getIdNode().getId() + " is never called in the program.");
+						System.exit(-1);
+					}
+				}
+			}*/
+		}
+		return null;
+	}
 
-        return hasRetValue;
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
 
-    }
-
-    @Override
-    public Node typeCheck() {
-        ArrayList<Node> baseTypeNode = new ArrayList<Node>();
-
-        for (Node dec: declarations){
-            //baseTypeNode.add(dec.typeCheck());
-            dec.typeCheck();
-        }
-
-        for (Node st: statements){
-            //baseTypeNode.add(st.typeCheck());
-            st.typeCheck();
-            StatementNode stat = (StatementNode) (st);
-            Node stat1 = stat.getStatement();
-            if(stat1.getClass().getName().contains("AssignmentNode")){
-                AssignmentNode ass = (AssignmentNode) (stat1);
-                Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
-                if(ass1.getClass().getName().contains("DerExpNode")){
-                    DerExpNode var = (DerExpNode) (ass1);
-                    if(var.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                        System.err.println("Variable not initialized");
-                        System.exit(0);
-                    }
-                }
-                if(ass1.getClass().getName().contains("CallExpNode")){
-                    CallExpNode call = (CallExpNode) (ass1);
-                    CallNode call1 = (CallNode) (call.getCall());
-                    ArrayList<Node> expCall = call1.getExp();
-                    for(Node exp : expCall){
-                        if(exp.getClass().getName().contains("DerExpNode")){
-                            DerExpNode exp1 = (DerExpNode) (exp);
-                            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                                System.err.println("Variable not initialized");
-                                System.exit(0);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-            if(stat1.getClass().getName().contains("PrintNode")){
-                PrintNode ass = (PrintNode) (stat1);
-                Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
-                if(ass1.getClass().getName().contains("DerExpNode")){
-                    DerExpNode var = (DerExpNode) (ass1);
-                    if(var.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                        System.err.println("Variable not initialized");
-                        System.exit(0);
-                    }
-                }
-                if(ass1.getClass().getName().contains("CallExpNode")){
-                    CallExpNode call = (CallExpNode) (ass1);
-                    CallNode call1 = (CallNode) (call.getCall());
-                    ArrayList<Node> expCall = call1.getExp();
-                    for(Node exp : expCall){
-                        if(exp.getClass().getName().contains("DerExpNode")){
-                            DerExpNode exp1 = (DerExpNode) (exp);
-                            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                                System.err.println("Variable not initialized");
-                                System.exit(0);
-                            }
-                        }
-                    }
-                }
-            }
-            if(stat1.getClass().getName().contains("ReturnNode")){
-                ReturnNode ass = (ReturnNode) (stat1);
-                Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
-                if(ass1.getClass().getName().contains("DerExpNode")){
-                    DerExpNode var = (DerExpNode) (ass1);
-                    if(var.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                        System.err.println("Variable not initialized");
-                        System.exit(0);
-                    }
-                }
-                if(ass1.getClass().getName().contains("CallExpNode")){
-                    CallExpNode call = (CallExpNode) (ass1);
-                    CallNode call1 = (CallNode) (call.getCall());
-                    ArrayList<Node> expCall = call1.getExp();
-                    for(Node exp : expCall){
-                        if(exp.getClass().getName().contains("DerExpNode")){
-                            DerExpNode exp1 = (DerExpNode) (exp);
-                            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                                System.err.println("Variable not initialized");
-                                System.exit(0);
-                            }
-                        }
-                    }
-                }
-            }
-            if(stat1.getClass().getName().contains("IteNode")){
-                IteNode ass = (IteNode) (stat1);
-                Node ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
-                if(ass1.getClass().getName().contains("DerExpNode")){
-                    DerExpNode var = (DerExpNode) (ass1);
-                    if(var.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                        System.err.println("Variable not initialized");
-                        System.exit(0);
-                    }
-                }
-                if(ass1.getClass().getName().contains("CallExpNode")){
-                    CallExpNode call = (CallExpNode) (ass1);
-                    CallNode call1 = (CallNode) (call.getCall());
-                    ArrayList<Node> expCall = call1.getExp();
-                    for(Node exp : expCall){
-                        if(exp.getClass().getName().contains("DerExpNode")){
-                            DerExpNode exp1 = (DerExpNode) (exp);
-                            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                                System.err.println("Variable not initialized");
-                                System.exit(0);
-                            }
-                        }
-
-                    }
-                }
-            }
-            if(stat1.getClass().getName().contains("CallNode")){
-                CallNode ass = (CallNode) (stat1);
-                ArrayList<Node> ass1 = ass.getExp(); //qui abbiamo espressione dell'assegnamento
-                for(Node assNode : ass1) {
-                    if (assNode.getClass().getName().contains("DerExpNode")) {
-                        DerExpNode var = (DerExpNode) (assNode);
-                        if (var.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
-                            System.err.println("Variable not initialized");
-                            System.exit(0);
-                        }
-                    }
-                    if (assNode.getClass().getName().contains("CallExpNode")) {
-                        CallExpNode call = (CallExpNode) (assNode);
-                        CallNode call1 = (CallNode) (call.getCall());
-                        ArrayList<Node> expCall = call1.getExp();
-                        for (Node exp : expCall) {
-                            if (exp.getClass().getName().contains("DerExpNode")) {
-                                DerExpNode exp1 = (DerExpNode) (exp);
-                                if (exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1) {
-                                    System.err.println("Variable not initialized");
-                                    System.exit(0);
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        for(Node dec : declarations){
-            DeclarationNode dec1 = (DeclarationNode) (dec);
-            Node dec2 = dec1.getDec();
-            if(dec2.getClass().getName().contains("DecVarNode")){
-                DecVarNode var = (DecVarNode) (dec2);
-                if(var.getEntry().getEffect().getVarEffect() < 2){
-                    System.err.println("Variable not used");
-                    System.exit(0);
-                }
-            }
-            
-        }
-        //ritorna ultima dichiarazione o stm del blocco
-        if(baseTypeNode.size() > 0){
-            return baseTypeNode.get(baseTypeNode.size() - 1);
-        }
-        else return new VoidNode(); //se non ci sono dichiarazioni e statement ritorna null/blocco void
-        //return new VoidNode();
-
-    }
-
-    @Override
-    public String codeGeneration() {
-
-        String code="";
-        code += "lfp\n";      //fp -> top       s->[fp]
-        code += "lal\n";      //al -> top       s->[al, fp]
-        code += "cfp\n";      //setta fp<-sp
-
-        for (Node dec : declarations){
-            code += "push0\n";              //s->[d(0) ... d(n)] 
-            code += dec.codeGeneration();   //cgen(stable, dec)     s->[d(0) .. d(n), al, fp]
-        }
-
-        for(Node st : statements){
-            code += st.codeGeneration();    //cgen(stable, stm)
-        }
-        for(Node dec : declarations){
-            code += "pop\n";                //toglie da stack ogni dichiarazione
-        }
-
-        code += "sal\n";        // al <- top    s->[fp]
-        code +="sfp\n";         // fp <- top    s->[]
-
-        return code;
-    }
-
-
-
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        env.enterScope();
-
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-
-        if(this.declarations!=null && this.declarations.size()>0){
-            env.offset = -2;
-            for(Node n: this.declarations){
-                res.addAll(n.checkSemantics(env));
-            }
-        }
-        if(this.statements!=null && this.statements.size()>0){
-            env.offset = -2;
-            for(Node n: this.statements){
-                res.addAll(n.checkSemantics(env));
-            }
-        }
-        env.exitScope();
-
-        return res;
-    }
-
-    @Override
-    public String Analyze() {
-        String out ="";
-        for (Node dec:declarations)
-            out += dec.Analyze() ;
-
-        for (Node st:statements)
-            out += st.Analyze();
-
-
-        return "ProgramNode:" + out + "\n" ;
-    }
-
-    public ArrayList<SemanticError> checkSemanticsFunction(Environment env) {
-        HashMap<String, STentry> st = env.symTable.get(env.nestingLevel);
-
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-
-        if(this.declarations!=null && this.declarations.size()>0){
-            env.offset = -2;
-            for(Node n: this.declarations){
-                res.addAll(n.checkSemantics(env));
-            }
-        }
-        if(this.statements!=null && this.statements.size()>0){
-            env.offset = -2; // Why?
-            for(Node n: this.statements){
-                res.addAll(n.checkSemantics(env));
-            }
-        }
-        return res;
-    }
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env){
+		env.incrementNestingLevel();
+		HashMap<String,STentry> hm = new HashMap<String,STentry>();
+		env.getSymTable().add(hm);
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		if(declarations.size() > 0 && declarations != null) { 
+			//env.offset = -2;
+			for(Node dec:declarations) {
+				if(dec != null) {
+					output.addAll(dec.checkSemantics(env));
+				}else {
+					output.add(new SemanticError("The declaration is null."));
+				}
+			}
+		}
+		if(statements.size() > 0 && statements != null) {
+			for(Node stat:statements) {
+				if(stat != null) {
+					output.addAll(stat.checkSemantics(env));
+				}else {
+					output.add(new SemanticError("The statement is null."));
+				}
+			}
+		}
+		env.getSymTable().remove(env.getNestingLevel());
+		env.decrementNestingLevel();
+		return output;
+	}
 }

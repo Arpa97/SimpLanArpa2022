@@ -1,50 +1,55 @@
 package ast;
 
-import util.Effect;
-import util.Environment;
-import util.SemanticError;
-import util.VoidNode;
-
 import java.util.ArrayList;
 
-public class PrintNode implements Node{
-    //'print' exp;
+import ast.expNode.DerExpNode;
+import util.Environment;
+import util.SemanticError;
 
-    private Node exp;
+public class PrintNode implements Node {
+	private Node exp;
+	
+	public PrintNode(Node exp) {
+		this.exp = exp;
+	}
 
-    public PrintNode(Node exp){
-        this.exp = exp;
-    }
+	@Override
+	public String toPrint(String indent) {
+		return indent + " print " + exp.toPrint(indent) + "\n";
+	}
 
+	@Override
+	public Node typeCheck() {
+		if(exp != null) {
+			Node type = exp.typeCheck();
+			if(exp.getClass().getName().contains("DerExpNode")) {
+				DerExpNode exp1 = (DerExpNode)(exp);
+				exp1.getIdNode().getEntry().getEffect().setUsed();
+			}
+			return type;
+		}else {
+			System.err.println("The expression is null.");
+			System.exit(-1);
+		}
+		return null;
+	}
 
-    @Override
-    public Node typeCheck() {
-        exp.typeCheck();
-        if(exp.getClass().getName().contains("DerExpNode")){
-            DerExpNode exp1 = (DerExpNode) (exp);
-            if(exp1.getIdNode().getEntry().getEffect().getVarEffect() < 1){
-                System.out.println("Errore, variabile non inizializzata");
-                System.exit(0);
-            }
-            exp1.getIdNode().getEntry().getEffect().setUsed();
-        }
-        return null; //ste metti null
-    }
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
 
-    @Override
-    public String codeGeneration() {
-        return null;
-    }
-
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        return exp.checkSemantics(env);
-    }
-
-    @Override
-    public String Analyze() {
-        return "Print node: " + this.exp.Analyze() + "\n";
-    }
-    
-    public Node getExp(){ return this.exp;}
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		if(exp != null) {
+			output.addAll(exp.checkSemantics(env));
+		}else
+			output.add(new SemanticError("The expression is null."));
+		return output;
+	}
+	
+	public Node getExp() {
+		return exp;
+	}
 }

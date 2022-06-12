@@ -1,84 +1,45 @@
 package main;
-import ast.Node;
-import ast.SimpLanPlusVisitorImpl;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.CommonTokenStream;import ast.Node;
+import ast.SimpLanPlusVisitorImpl;
 import parser.SimpLanPlusLexer;
 import parser.SimpLanPlusParser;
 import util.Environment;
 import util.SemanticError;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
-public class Main {
-    public static void main(String[] args) throws Exception {
-        String filename = "src/input";
-        String out = "src/log.log";
-        String out2 = "src/logTwo.log";
-        CharStream inputFile = CharStreams.fromFileName(filename);
-        //Lexer Creator
-        SimpLanPlusLexer lexer = new SimpLanPlusLexer(inputFile);
-        //using custom error handler
-        ErrorHandlerSimpLan handler = new ErrorHandlerSimpLan(out);
-            //changing error listener/handler
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(handler);
 
-        //Getting Tokens
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-
-        //creating the parser
-        SimpLanPlusParser parser = new SimpLanPlusParser(tokenStream);
-        //changing error handler
-        parser.removeErrorListeners();
-        parser.addErrorListener(handler);
-
-        SimpLanPlusVisitorImpl visitor = new SimpLanPlusVisitorImpl();
-
-        System.out.println("Starting syntax analysis...\n");
-        //Instantiating the Abstract Syntax Tree
-        Node ast = visitor.visit(parser.program());
-
-        //handler is fulled during the tree parse
-        if (!handler.err_list.isEmpty()){
-            System.out.println("SYNTAX ERROR FOUND! Check the logfile\n");
-            return;
-        }
-
-        System.out.println("No syntax error found\n");
-
-        //starting semantic analysis
-        System.out.println("Starting Semantic Analysis\n\n");
-        //getting a new environment
-        Environment env = new Environment();
-        //calling check semantics. Err will store all the errors found by check semantics
-        ArrayList<SemanticError> err = ast.checkSemantics(env);
-
-
-        if(err!=null && err.size()>0) {
-            System.out.println("SEMANTIC ERROR FOUND! Check the logfile\n");
-            BufferedWriter wr = new BufferedWriter(new FileWriter(out2));
-            for (SemanticError e : err) {
-                System.out.println(e);
-                wr.write(e.toString() + "\n");
-            }
-            wr.close();
-            return;
-        }
-        System.out.println("Semantic is Correct");
-        System.out.println("-----------------");
-        
-        //TYPE CHECKING
-        System.out.println("Starting Type Checking: \n");
-        Node type = ast.typeCheck();
-        System.out.println("Types of the program after type checking are in the following list:\n");
-        System.out.println(type.Analyze());
-        
-        return;
-    }
-
+public class Main{
+	public static void main(String[] args) throws Exception {
+		//Lexical Analyzer Ex. 1 - The first part of the function
+		//extracts the lexical errors and print them on a file .txt
+		String filename = "input";
+		InputStream is = new FileInputStream(filename);
+		CharStream input = CharStreams.fromStream(is);
+		SimpLanPlusLexer lexer = new SimpLanPlusLexer(input);
+		ErrorListener listener = new ErrorListener();
+		lexer.addErrorListener(listener);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		SimpLanPlusParser parser = new SimpLanPlusParser(tokens);
+		parser.addErrorListener(listener);
+		//Symbol Table Ex. 2 - The second part of the function
+		//creates the Symbol table implemented as list of hash
+		//(visible inside the file Environment.java)
+		SimpLanPlusVisitorImpl visitor = new SimpLanPlusVisitorImpl();
+		Node ast = visitor.visit(parser.program());
+		Environment env = new Environment();		
+		ArrayList<SemanticError> err = ast.checkSemantics(env); //catch the semantic errors and print them
+		if(err.size() > 0) {
+			System.out.println("You had: "+err.size()+" errors:");
+			for(SemanticError e: err) {
+				System.out.println("\t" + e);
+			}
+		}else{
+			ast.typeCheck();
+			System.out.println(ast.toPrint(""));
+		}
+	}
 }
-

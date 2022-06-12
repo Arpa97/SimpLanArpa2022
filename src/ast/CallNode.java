@@ -1,127 +1,147 @@
 package ast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import ast.expNode.DerExpNode;
 import util.Environment;
 import util.SemanticError;
 import util.SimpLanPlusLib;
 
-import java.util.ArrayList;
+public class CallNode implements Node {
+	private IdNode idNode;
+	private ArrayList<Node> expressions;
+	private STentry entry;
+	private ArrowTypeNode t = null;
 
+	
+	public CallNode(IdNode idNode, ArrayList<Node> expressions) {
+		this.idNode = idNode;
+		if(expressions == null) {
+			this.expressions = new ArrayList<Node>();
+		}else {
+			this.expressions = expressions;
+		}
+	}
 
-//MODIFICHE STE: 
-// aggiunto entry e nesting level, getter e setter vari
-public class CallNode implements Node{
+	@Override
+	public String toPrint(String indent) {
+		String stringa = "Call " + idNode.toPrint(indent) + "(";
+		int i = 0;
+		if(expressions != null) {
+		for(Node n:expressions) {
+			stringa += n.toPrint(indent);
+			if(i < (expressions.size() - 1))
+				stringa += ",";
+			i++;
+		}
+		stringa += ") ";
+		return stringa + "\n";
+		} else {
+			return "";
+		}
 
-    private IdNode id;
-    private ArrayList<Node> exp;
-    
-    private STentry entry;
-    private int nlevel;
+	}
 
-    public CallNode(IdNode id, ArrayList<Node> exp){
-        this.id = id;
-        this.exp = exp;
-    }
+	@Override
+	public Node typeCheck() {
+		HashMap<ArgNode,TypeNode> p = t.getParList();
+	     if ( !(p.size() == expressions.size() )) {
+    		 System.err.println("Wrong number of parameters in the invocation of "+idNode.getId());
+    		 System.exit(0);
+    	 }
+    	 int cont=0;
+    	 for (Entry<ArgNode,TypeNode> par: p.entrySet()) {
+    		 if(!(SimpLanPlusLib.isSubtype(expressions.get(cont).typeCheck(), par.getValue()))) {
+    			 if((cont+1) == 1)
+    			 	System.err.println("Wrong type for "+(cont+1)+"-st parameter in the invocation of "+idNode.getId());
+    			 if((cont+1) == 2)
+    			 	System.err.println("Wrong type for "+(cont+1)+"-nd parameter in the invocation of "+idNode.getId());
+    			 if((cont+1) == 3)
+    			 	System.err.println("Wrong type for "+(cont+1)+"-rd parameter in the invocation of "+idNode.getId());
+    			 if((cont+1) > 3)
+    			 	System.err.println("Wrong type for "+(cont+1)+"-th parameter in the invocation of "+idNode.getId());
+    			 System.exit(-1);
+    		 }
+    		 ArgNode argument = par.getKey();
+    		 STentry entryArgument = argument.getEntry();
+    		 entryArgument.getEffect().setInitialized();
+    		 if(argument.getVar()) {
+    			 if(expressions.get(cont).getClass().getName().contains("DerExpNode")) {
+    				 DerExpNode variable = (DerExpNode)(expressions.get(cont));
+    				 argument.setEntry(variable.getIdNode().getEntry());
+    			 }
+    		 }
+    		 cont++;
+    	 }
+    	 for(Node exp:expressions) {
+    		 if(exp.getClass().getName().contains("DerExpNode")) {
+    			 DerExpNode singleExp = (DerExpNode)(exp);
+    			 IdNode variable = singleExp.getIdNode();
+    			 variable.getEntry().getEffect().setUsed();
+    		 }
+    	 }
+		 return t.getRet();
+	}
+	
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
 
-    public CallNode(IdNode id){
-        this.id = id;
-    }
-
-    public CallNode(IdNode id, ArrayList<Node> exp, STentry entry){
-        this.id = id;
-        this.exp = exp;
-        this.entry = entry;
-    }
-
-    public IdNode getId() {
-        return id;
-    }
-
-    public void setId(IdNode id) {
-        this.id = id;
-    }
-
-    public ArrayList<Node> getExp() {
-        return exp;
-    }
-
-    public void setExp(ArrayList<Node> exp) {
-        this.exp = exp;
-    }
-
-    public STentry getEntry() {
-        return entry;
-    }
-
-    public void setEntry(STentry entry) {
-        this.entry = entry;
-    }
-
-
-    @Override
-    public String Analyze() {
-        //return "\n" + "DerExpNode" + this.id.Analyze();
-        String first = "CallNode" + id + "(";
-        String last = ")" + "";
-        String exp = "";
-        
-        for(Node expNode : this.exp){
-            exp += expNode.Analyze()+" ";
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		STentry flag = null;
+		int i = env.getNestingLevel();
+		while (i >=0 && flag==null) {
+            flag=(env.getSymTable().get(i--)).get(this.idNode.getId());           
+		}
+        if (flag==null){
+            output.add(new SemanticError("Function "+this.idNode.getId()+" not defined."));
+            return output;
+        } else {
+			 this.entry = flag;
+			 entry.getEffect().setUsed();
+			 if(this.expressions != null) {
+		            for (Node exp : this.expressions) {   	
+		                output.addAll(exp.checkSemantics(env));                                
+		            }
+		     }
         }
-        String nestingLevel = ":: nesting level" + this.nlevel;
-        return first + exp + last + nestingLevel;
-    }
+        if(entry.getType() instanceof ArrowTypeNode) {
+			t = (ArrowTypeNode) entry.getType();	
+		} else {
+			 System.err.println("Invocation of a non-function "+idNode.getId());
+		     System.exit(-1);
+		}
+    	HashMap<ArgNode,TypeNode> p = t.getParList();
+		int cont=0;
+		if(expressions.size() > 0) {
+		    for (Entry<ArgNode,TypeNode> par: p.entrySet()) {
+		       	if(par.getKey().getVar()){
+		       		if(expressions.get(cont) != null) {
+		       			if(!(expressions.get(cont).getClass().getName().contains("DerExpNode"))) {
+		       				output.add(new SemanticError("The argument " +par.getKey().getId()+ " of the function requests var"));
+		       			}
+		       		}
+		       	}
+		       	cont++;
+		    }
+		}
+        return output;
+	}
 
-    @Override
-    public Node typeCheck() {
-        ArrowTypeNode t = null;
-        if (entry.getType() instanceof ArrowTypeNode){
-            t=(ArrowTypeNode) entry.getType(); 
-        } else{
-            System.out.println("Call Error: invocation of a non-function "+id);
-            System.exit(0);
-        }
-        ArrayList<Node> p = t.getParList();
-        
-        if(exp.size() != p.size()){
-            System.out.println("Incorrect number of declared parameters ");
-            System.exit(0);
-        }
-        
-        for(int i = 0; i < p.size(); i++){
-            if(!(SimpLanPlusLib.isSubtype((exp.get(i)).typeCheck(), ((ArgNode)p.get(i)).getType()))){
-                System.out.println("Call Error: wrong type for " + (i + 1) + "-th parameter in the invocation of " + id);
-                System.exit(0);
-            }
-        }
-        for(int i = 0; i < exp.size(); i++){
-            if(exp.get(i).getClass().getName().contains("DerExpNode")){
-                DerExpNode exp1 = (DerExpNode) (exp.get(i));
-                exp1.getIdNode().getEntry().getEffect().setUsed();
-            }
-        }
-        return t.getRet();
-    }
 
-    @Override
-    public String codeGeneration() {
-        return null;
-    }
+	public ArrayList<Node> getExpressions(){
+		return expressions;
+	}
+	
+	public ArrowTypeNode getArrow() {
+		return t;
+	}
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-        int j=env.nestingLevel;
-        STentry tmp=null;
-        while (j>=0 && tmp==null)
-            tmp=(env.symTable.get(j--)).get(this.id.getId());
-        if (tmp==null){
-            res.add(new SemanticError("Function "+this.id.getId()+" not declared."));
-            return res;
-        }
-        if(this.exp != null) {
-            for (Node arg : exp)
-                res.addAll(arg.checkSemantics(env));
-        }
-        return res;
-    }
+	public IdNode getIdNode() {
+		return idNode;
+	}
 }

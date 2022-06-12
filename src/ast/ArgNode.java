@@ -1,66 +1,71 @@
 package ast;
-import util.Effect;
-import util.Environment;
-import util.SemanticError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import util.Environment;
+import util.SemanticError;
 
-//MODIFICHE STE: 
-// aggiunti get e setter id e type
-public class ArgNode implements Node {
+public class ArgNode implements Node{
+	private boolean var = false;
+	private Node type;
+	private IdNode idNode;
+	private STentry entry;
 
-        private Node type;
-        private IdNode id;
-        private boolean isVar = false;
-        //private Effect effect;
+	public ArgNode(boolean var,Node type, IdNode idNode) {
+		this.var = var;
+		this.type = type;
+		this.idNode = idNode;
+	}
 
-        public ArgNode(Node type, IdNode id, boolean isVar) {
-            this.type = type;
-            this.id = id;
-            this.isVar = isVar;
-            //this.effect = new Effect();
-        }
+	@Override
+	public String toPrint(String indent) {
+		String stringa = "Arg ";
+		if(var == true)
+			stringa += "var" + " ";
+		stringa += type.toPrint(indent) + " " + idNode.toPrint(indent) + " ";
+		return indent + stringa + "\n";
+	}
 
-        public IdNode getId(){
-            return id;
-        }
-    
-        public void setId(IdNode id){
-            this.id = id;
-        }
-    
-        public Node getType() {
-            return type;
-        }
-    
-        public void setType(Node type) {
-            this.type = type;
-        }
-        @Override
-        public String Analyze() {
-            return "\n"+"Arg"+this.type.Analyze()+this.id.Analyze();
-        }
-        @Override
-        public Node typeCheck() {
-            return null;
-        }
+	@Override
+	public Node typeCheck() {
+		return type;
+	}
 
-        @Override
-        public String codeGeneration() {
-            return "";
-        }
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
+	
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		int flag = env.getNestingLevel();
+		HashMap<String,STentry> hm = env.getSymTable().get(env.getNestingLevel());
+		flag = env.getNestingLevel();
+		entry = new STentry(flag,type,env.getOffset(),false);
+		if(hm.put(idNode.getId(),entry) != null)
+			output.add(new SemanticError("The argument "+idNode.getId()+" is already defined."));
+		env.decrementOffset();
+		return output;
+	}
+	
+	public boolean getVar() {
+		return this.var;
+	}
 
-        @Override
-        public ArrayList<SemanticError> checkSemantics(Environment env) {
-            ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-            HashMap<String, STentry> st = env.symTable.get(env.nestingLevel);
+	public String getId() {
+		return this.idNode.getId();
+	}
+	
+	public IdNode getIdNode() {
+		return this.idNode;
+	}
+	
+	public STentry getEntry() {
+		return entry;
+	}
 
-            if (st.put(this.id.getId(), new STentry(env.nestingLevel, type, env.offset--)) != null) {
-                res.add(new SemanticError("Argument id " + this.id.getId() + " already defined for the function."));
-            }
-            
-
-            return res;
-        }
-    }
+	public void setEntry(STentry entry) {
+		this.entry = entry;
+	}
+}

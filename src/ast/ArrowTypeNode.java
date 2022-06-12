@@ -1,51 +1,55 @@
 package ast;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import util.Environment;
 import util.SemanticError;
 
-import java.util.ArrayList;
-
 public class ArrowTypeNode implements Node {
+  private Node ret;
+  private HashMap<ArgNode,TypeNode> parlist;
+  private ArrayList<STentry> entrylist;
 
-    private ArrayList<Node> parlist;
-    private Node ret;
+  public ArrowTypeNode (HashMap<ArgNode,TypeNode> parlist, Node ret,ArrayList<STentry> entrylist) {
+    this.parlist = parlist;
+    this.ret = ret;
+    this.entrylist = entrylist;
+  }
 
-    public ArrowTypeNode (ArrayList<Node> p, Node r) {
-        parlist=p;
-        ret=r;
-    }
+  //DA CONTROLLARE SE QUESTA TOPRINT VIENE STAMPATA
+  public String toPrint(String s) {
+	String parlstr="";
+    for (Entry<ArgNode,TypeNode> par: parlist.entrySet())
+      parlstr+=par.getKey().toPrint(s+"  ");
+	return s+"ArrowType\n" + parlstr + ret.toPrint(s+"  ->") ; 
+  }
 
-    public Node getRet () { //
-        return ret;
-    }
+  @Override
+  public ArrayList<SemanticError> checkSemantics(Environment env) {
+	  return new ArrayList<SemanticError>();
+  }
+  
+  //non utilizzato
+  @Override
+  public Node typeCheck () {
+    return null;
+  }
 
-    public ArrayList<Node> getParList () { //
-        return parlist;
-    }
+  //non utilizzato
+  @Override
+  public String codeGeneration() {
+		return "";
+  }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        // TODO Auto-generated method stub
-        return new ArrayList<SemanticError>();
-    }
+  public Node getRet () {
+	  return ret;
+  }
 
-    //da rivedere, guardato da simplan del prof
-    @Override
-    public String Analyze() {
-        String parlstr="";
-        for (Node par:parlist)
-            parlstr+=par.Analyze()+" ";
-            return "ArrowType\n" + parlstr + ret.Analyze()+ "  ->" ;
-    }
+  public HashMap<ArgNode,TypeNode> getParList () {
+	  return parlist;
+  }
 
-    //not used
-    public Node typeCheck () {
-        return null;
-    }
-
-    //not used
-    public String codeGeneration() {
-        return "";
-    }
-
+  public ArrayList<STentry> getEntry() {
+	  return entrylist;
+  }
 } 

@@ -1,35 +1,35 @@
 package util;
 
 public class Effect {
-    
-    //inizialmente le settiamo entrambe a non utilizzate
-    
-    // 0 dichiarata, 1 inizializzata, 2 usata
-    private int varEffect;
+	private int status;
 
-    public Effect() {
-        this.varEffect = 0;
-    }
+	public Effect(boolean initialized) {
+		if(initialized == true)
+			this.status = 1;
+		else 
+			this.status = 0;
+			
+	}
 
-    public boolean getUsed() {
-        return this.varEffect == 2;
-    }
+	public boolean isLess(Effect e) {
+		return this.status < e.status;
+	}
 
-    public boolean getInitialized() {
-        return this.varEffect == 1;
-    }
-    
-    public void setInitialized(){
-        if(this.varEffect < 1) {
-            this.varEffect = 1;
-        }
-    }
-    
-    public void setUsed(){
-        
-        if(this.varEffect >= 1) this.varEffect = 2;
-    }
-    
-    public int getVarEffect(){return this.varEffect;}
-            
+	public void setInitialized() {
+		if(this.status < 1)
+			this.status = 1;
+	}
+
+	public void setUsed() {
+		if(this.status >= 1)
+			this.status = 2;
+	}
+
+	public int getValue() {
+		return this.status;
+	}
+
+  public void setValue(int value) {
+	  this.status = value;
+  }
 }
