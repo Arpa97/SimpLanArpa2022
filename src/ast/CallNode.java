@@ -1,127 +1,168 @@
 package ast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import ast.expNode.DerExpNode;
 import util.Environment;
 import util.SemanticError;
 import util.SimpLanPlusLib;
 
-import java.util.ArrayList;
+public class CallNode implements Node {
+	private IdNode idNode;
+	private ArrayList<Node> expressions;
+	private STentry entry;
+	private ArrowTypeNode t = null;
+	private int nlCall;
+	private String f_entry;
+
+	
+	public CallNode(IdNode idNode, ArrayList<Node> expressions) {
+		this.idNode = idNode;
+		if(expressions == null) {
+			this.expressions = new ArrayList<Node>();
+		}else {
+			this.expressions = expressions;
+		}
+	}
+
+	@Override
+	public String printer(String indent) {
+		String stringa = "Call " + idNode.printer(indent) + "(";
+		int i = 0;
+		if(expressions != null) {
+		for(Node n:expressions) {
+			stringa += n.printer(indent);
+			if(i < (expressions.size() - 1))
+				stringa += ",";
+			i++;
+		}
+		stringa += ") ";
+		return stringa + "\n";
+		} else {
+			return "";
+		}
+
+	}
+
+	@Override
+	public Node typeCheck() {
+		HashMap<ArgNode,TypeNode> p = t.getParList();
+	     if ( !(p.size() == expressions.size() )) {
+    		 System.err.println("ERROR: Invocation of "+idNode.getId() + "with wrong parameter number: should be "+ p.size() + "but is " + expressions.size() +"\n" );
+    		 System.exit(0);
+    	 }
+    	 int typeCounter=0;
+    	 for (Entry<ArgNode,TypeNode> par: p.entrySet()) {
+    		 if(!(SimpLanPlusLib.isSubtype(expressions.get(typeCounter).typeCheck(), par.getValue()))) {
+				 System.err.println("Wrong type for parameter at position " +(typeCounter+1)+ " in the invocation of "+idNode.getId());
+    			 System.exit(-1);
+    		 }
+    		 ArgNode argument = par.getKey();
+    		 STentry entryArgument = argument.getEntry();
+    		 entryArgument.getEffect().setInitialized();
+    		 if(argument.getVar()) {
+    			 if(expressions.get(typeCounter).getClass().getName().contains("DerExpNode")) {
+    				 DerExpNode variable = (DerExpNode)(expressions.get(typeCounter));
+    				 argument.setEntry(variable.getIdNode().getEntry());
+    			 }
+    		 }
+    		 typeCounter++;
+    	 }
+    	 for(Node exp:expressions) {
+    		 if(exp.getClass().getName().contains("DerExpNode")) {
+    			 DerExpNode singleExp = (DerExpNode)(exp);
+    			 IdNode variable = singleExp.getIdNode();
+    			 variable.getEntry().getEffect().setUsed();
+    		 }
+    	 }
+		 return t.getRet();
+	}
+	
+	@Override
+	public String codeGeneration() {
+		String parameters = "" ;
+		for (int i=0; i< expressions.size(); i++)
+			parameters += expressions.get(i).codeGeneration() // r1 <- cgen(stable, e(i)) i in 1, exp.size() - 1; s -> s[e(i)]
+					+ "lr1\n" ;      // r1 -> top_of_stack; s -> [e(i), .., e(0), fp]
+		String ar = "";
+		for(int i = 0; i < this.nlCall - entry.getNestinglevel(); i++ ){
+			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
+		}
+		if(this.f_entry == null){
+			this.f_entry = this.entry.getReference().getfEntry();
+		}
+		return "lfp\n"+ 				// push $fp to save it in the stack [fp]
+				"lfp\n" +                        // fp -> top_of_stack :: s -> [al, fp]
+				"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> [fp]
+				ar     +                        // lw al 0(al) :: al = MEMORY[al + 0] to check the AR; s -> [fp]
+				//  "lw1 "+ entry.getOffset()+"\n"+  // lw r1 entry.offset(al) :: r1 <- MEMORY[entry.offset + al]; s -> [fp]
+				// "lr1\n"+ //inserisco activation link in stack
+				"lal\n"+ //load the access link into the top of the stack; al -> top_of_stack; s -> [al,fp]
+				parameters +            // cgen(stable, exp.get(i)) :: for i in exp.size() - 1 to 0; s-> [e(n), .., e(0),al, fp]
+				"mfp " + expressions.size() + "\n" +   // move sp in fp
+				"cra\n"  +              // ra <- ip + 4
+				"lra\n" +               // push ra in the stack
+				"b " + f_entry + "\n";  // doing js on the address ra; ip <- ra; s -> [ra, e(n), .., e(0), al, fp]
 
 
-//MODIFICHE STE: 
-// aggiunto entry e nesting level, getter e setter vari
-public class CallNode implements Node{
+	}
 
-    private IdNode id;
-    private ArrayList<Node> exp;
-    
-    private STentry entry;
-    private int nlevel;
-
-    public CallNode(IdNode id, ArrayList<Node> exp){
-        this.id = id;
-        this.exp = exp;
-    }
-
-    public CallNode(IdNode id){
-        this.id = id;
-    }
-
-    public CallNode(IdNode id, ArrayList<Node> exp, STentry entry){
-        this.id = id;
-        this.exp = exp;
-        this.entry = entry;
-    }
-
-    public IdNode getId() {
-        return id;
-    }
-
-    public void setId(IdNode id) {
-        this.id = id;
-    }
-
-    public ArrayList<Node> getExp() {
-        return exp;
-    }
-
-    public void setExp(ArrayList<Node> exp) {
-        this.exp = exp;
-    }
-
-    public STentry getEntry() {
-        return entry;
-    }
-
-    public void setEntry(STentry entry) {
-        this.entry = entry;
-    }
-
-
-    @Override
-    public String Analyze() {
-        //return "\n" + "DerExpNode" + this.id.Analyze();
-        String first = "CallNode" + id + "(";
-        String last = ")" + "";
-        String exp = "";
-        
-        for(Node expNode : this.exp){
-            exp += expNode.Analyze()+" ";
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		STentry flag = null;
+		int i = env.getNestingLevel();
+		nlCall = i;
+		while (i >=0 && flag==null) {
+            flag=(env.getSymTable().get(i--)).get(this.idNode.getId());           
+		}
+        if (flag==null){
+            output.add(new SemanticError("Function "+this.idNode.getId()+" not defined."));
+            return output;
+        } else {
+			 this.entry = flag;
+			 entry.getEffect().setUsed();
+			 if(this.expressions != null) {
+		            for (Node exp : this.expressions) {   	
+		                output.addAll(exp.checkSemantics(env));                                
+		            }
+		     }
         }
-        String nestingLevel = ":: nesting level" + this.nlevel;
-        return first + exp + last + nestingLevel;
-    }
+        if(entry.getType() instanceof ArrowTypeNode) {
+			t = (ArrowTypeNode) entry.getType();	
+		} else {
+			 System.err.println("Invocation of a non-function "+idNode.getId());
+		     System.exit(-1);
+		}
+    	HashMap<ArgNode,TypeNode> p = t.getParList();
+		int cont=0;
+		if(expressions.size() > 0) {
+		    for (Entry<ArgNode,TypeNode> par: p.entrySet()) {
+		       	if(par.getKey().getVar()){
+		       		if(expressions.get(cont) != null) {
+		       			if(!(expressions.get(cont).getClass().getName().contains("DerExpNode"))) {
+		       				output.add(new SemanticError("Missing reference to variable for " +par.getKey().getId()+
+									" argument in function"));
+		       			}
+		       		}
+		       	}
+		       	cont++;
+		    }
+		}
+        return output;
+	}
 
-    @Override
-    public Node typeCheck() {
-        ArrowTypeNode t = null;
-        if (entry.getType() instanceof ArrowTypeNode){
-            t=(ArrowTypeNode) entry.getType(); 
-        } else{
-            System.out.println("Call Error: invocation of a non-function "+id);
-            System.exit(0);
-        }
-        ArrayList<Node> p = t.getParList();
-        
-        if(exp.size() != p.size()){
-            System.out.println("Incorrect number of declared parameters ");
-            System.exit(0);
-        }
-        
-        for(int i = 0; i < p.size(); i++){
-            if(!(SimpLanPlusLib.isSubtype((exp.get(i)).typeCheck(), ((ArgNode)p.get(i)).getType()))){
-                System.out.println("Call Error: wrong type for " + (i + 1) + "-th parameter in the invocation of " + id);
-                System.exit(0);
-            }
-        }
-        for(int i = 0; i < exp.size(); i++){
-            if(exp.get(i).getClass().getName().contains("DerExpNode")){
-                DerExpNode exp1 = (DerExpNode) (exp.get(i));
-                exp1.getIdNode().getEntry().getEffect().setUsed();
-            }
-        }
-        return t.getRet();
-    }
 
-    @Override
-    public String codeGeneration() {
-        return null;
-    }
+	public ArrayList<Node> getExpressions(){
+		return expressions;
+	}
+	
+	public ArrowTypeNode getArrow() {
+		return t;
+	}
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-        int j=env.nestingLevel;
-        STentry tmp=null;
-        while (j>=0 && tmp==null)
-            tmp=(env.symTable.get(j--)).get(this.id.getId());
-        if (tmp==null){
-            res.add(new SemanticError("Function "+this.id.getId()+" not declared."));
-            return res;
-        }
-        if(this.exp != null) {
-            for (Node arg : exp)
-                res.addAll(arg.checkSemantics(env));
-        }
-        return res;
-    }
+	public IdNode getIdNode() {
+		return idNode;
+	}
 }

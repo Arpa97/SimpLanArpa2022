@@ -1,50 +1,48 @@
 package util;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ast.Node;
 import ast.STentry;
+
 public class Environment {
+	
+	private ArrayList<HashMap<String,STentry>> symTable;
+	private int nestingLevel;
+	private int offset;
+	public int provanesting;
 
-    public ArrayList<HashMap<String,STentry>>  symTable = new ArrayList<>();
-    public int nestingLevel = -1;
-    public int offset = 0;
 
-    public void enterScope() {
-        nestingLevel++;
-        HashMap<String, STentry> hm = new HashMap<>();
-        symTable.add(hm);
-    }
+	public Environment() {
+		symTable = new ArrayList<>();
+		nestingLevel = -1;
+		offset = 0;
+	}
+	
 
-    public void exitScope() {
-        symTable.remove(nestingLevel--);
-    }
-
-    public HashMap<String, STentry> getScope(int nl) {
-        return symTable.get(nl);
-    }
-
-    public HashMap<String, STentry> getCurrentScope() {
-        return getScope(getNestingLevel());
-    }
-
-    public STentry addEntry(Node type, String id) {
-        STentry entry;
-        if (type != null)
-            entry = new STentry(nestingLevel, type, offset--);
-        else
-            entry = new STentry(nestingLevel, offset--);
-        HashMap<String, STentry> hm = getCurrentScope();
-
-        return hm.put(id, entry);
-    }
-
-    public int getNestingLevel() {
-        return nestingLevel;
-    }
-
-    public STentry checkDeclaration(String id, int nl) {
-        HashMap<String, STentry> hm = getScope(nl);
-        return hm.get(id);
-    }
+	//GETTER METHODS
+	public ArrayList<HashMap<String,STentry>> getSymTable() {
+		return this.symTable;
+	}
+	public int getNestingLevel() {
+		return this.nestingLevel;
+	}
+	public int getOffset() {
+		return this.offset;
+	}
+	
+	//SETTER METHODS
+	public void increaseNesting() {
+		this.nestingLevel++;
+	}
+	public void decreaseNesting() {
+		this.nestingLevel--;
+	}
+	public void decreaseOffset() {
+		this.offset--;
+	}
+	
+	
+	
+	
 }

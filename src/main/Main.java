@@ -1,84 +1,79 @@
 package main;
-import ast.Node;
-import ast.SimpLanPlusVisitorImpl;
+import Interpreter.ExecuteVM;
+import ast.SVMVisitorImpl;
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.CommonTokenStream;import ast.Node;
+import ast.SimpLanPlusVisitorImpl;
+import parser.SVMLexer;
+import parser.SVMParser;
 import parser.SimpLanPlusLexer;
 import parser.SimpLanPlusParser;
 import util.Environment;
 import util.SemanticError;
+import util.SimpLanPlusLib;
 
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.util.ArrayList;
 
-public class Main {
-    public static void main(String[] args) throws Exception {
-        String filename = "src/input";
-        String out = "src/log.log";
-        String out2 = "src/logTwo.log";
-        CharStream inputFile = CharStreams.fromFileName(filename);
-        //Lexer Creator
-        SimpLanPlusLexer lexer = new SimpLanPlusLexer(inputFile);
-        //using custom error handler
-        ErrorHandlerSimpLan handler = new ErrorHandlerSimpLan(out);
-            //changing error listener/handler
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(handler);
 
-        //Getting Tokens
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+public class Main{
+	public static void main(String[] args) throws Exception {
+		//LEXICAL ANALYSIS...
+		String filename = "input";
+		InputStream is = new FileInputStream(filename);
+		CharStream input = CharStreams.fromStream(is);
+		SimpLanPlusLexer lexer = new SimpLanPlusLexer(input);
+		ErrorListener listener = new ErrorListener();
+		lexer.addErrorListener(listener);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		SimpLanPlusParser parser = new SimpLanPlusParser(tokens);
+		parser.addErrorListener(listener);
+		//SYMBLE TABLE
+		SimpLanPlusVisitorImpl visitor = new SimpLanPlusVisitorImpl();
+		Node ast = visitor.visit(parser.program());
+		Environment env = new Environment();		
+		ArrayList<SemanticError> err = ast.checkSemantics(env); //catch the semantic errors and print them
+		if(err.size() > 0) {
+			System.out.println("You had: "+err.size()+" errors:");
+			for(SemanticError e: err) {
+				System.out.println("\t" + e);
+			}
+		}else{
+			ast.typeCheck();
+			System.out.println(ast.printer(""));
 
-        //creating the parser
-        SimpLanPlusParser parser = new SimpLanPlusParser(tokenStream);
-        //changing error handler
-        parser.removeErrorListeners();
-        parser.addErrorListener(handler);
+			// CODE GEN
+			System.out.println("Generating code...");
+			String code=ast.codeGeneration();
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename+".asm"));
+			out.write(code + "halt" + SimpLanPlusLib.getCode());
+			out.close();
+			System.out.println("Code generated! Assembling and running generated code.");
+			System.out.println("File: " + filename + ".asm");
+			FileInputStream isASM = new FileInputStream(filename+".asm");
+			ANTLRInputStream inputASM = new ANTLRInputStream(isASM);
+			SVMLexer lexerASM = new SVMLexer(inputASM);
+			CommonTokenStream tokensASM = new CommonTokenStream(lexerASM);
+			SVMParser parserASM = new SVMParser(tokensASM);
 
-        SimpLanPlusVisitorImpl visitor = new SimpLanPlusVisitorImpl();
+			//parserASM.assembly(); is called in the visitorSVM
 
-        System.out.println("Starting syntax analysis...\n");
-        //Instantiating the Abstract Syntax Tree
-        Node ast = visitor.visit(parser.program());
+			SVMVisitorImpl visitorSVM = new SVMVisitorImpl();
+			visitorSVM.visit(parserASM.assembly());
 
-        //handler is fulled during the tree parse
-        if (!handler.err_list.isEmpty()){
-            System.out.println("SYNTAX ERROR FOUND! Check the logfile\n");
-            return;
-        }
+			System.out.println("You had: "+lexerASM.lexicalErrors+" lexical errors and "+parserASM.getNumberOfSyntaxErrors()+" syntax errors.");
+			if (lexerASM.lexicalErrors>0 || parserASM.getNumberOfSyntaxErrors()>0) System.exit(1);
 
-        System.out.println("No syntax error found\n");
-
-        //starting semantic analysis
-        System.out.println("Starting Semantic Analysis\n\n");
-        //getting a new environment
-        Environment env = new Environment();
-        //calling check semantics. Err will store all the errors found by check semantics
-        ArrayList<SemanticError> err = ast.checkSemantics(env);
-
-
-        if(err!=null && err.size()>0) {
-            System.out.println("SEMANTIC ERROR FOUND! Check the logfile\n");
-            BufferedWriter wr = new BufferedWriter(new FileWriter(out2));
-            for (SemanticError e : err) {
-                System.out.println(e);
-                wr.write(e.toString() + "\n");
-            }
-            wr.close();
-            return;
-        }
-        System.out.println("Semantic is Correct");
-        System.out.println("-----------------");
-        
-        //TYPE CHECKING
-        System.out.println("Starting Type Checking: \n");
-        Node type = ast.typeCheck();
-        System.out.println("Types of the program after type checking are in the following list:\n");
-        System.out.println(type.Analyze());
-        
-        return;
-    }
-
+			System.out.println("Starting Virtual Machine...");
+			ExecuteVM vm = new ExecuteVM(visitorSVM.code);
+			System.out.println("Output: ");
+			vm.cpu();
+			System.out.println("-----------------");
+		}
+	}
 }
-

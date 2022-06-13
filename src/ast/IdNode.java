@@ -1,72 +1,79 @@
 package ast;
 
-import util.Effect;
+import java.util.ArrayList;
 import util.Environment;
 import util.SemanticError;
 
-import java.util.ArrayList;
+public class IdNode implements Node {
+	private String id;
+	private STentry entry;
+	private int nLevel_id;
+	
+	public IdNode(String text) {
+		id = text;
+	}
 
-public class IdNode implements Node{
+	@Override
+	public String printer(String indent) {
+		return indent +"ID "+ id + "\n";
+	}
 
-    private String id;
-    private STentry entry;
+	@Override
+	public Node typeCheck() {
+		if(entry==null) {
+			System.exit(-1);
+		}
+		return entry.getType();
+	}
 
-    public IdNode(String id){
-        this.id = id;
-    }
+	@Override
+	public String codeGeneration() {
+		// ID case
+		String ar = "";
+		for(int i = 0; i < nLevel_id - entry.getNestinglevel(); i++ ){
+			ar += "lw 0\n";     // lw al 0(al) :: al = MEMORY[al + 0]
+		}
+		return "lfp\n" +                        // fp -> top_of_stack :: s -> [fp]
+				"sal\n" +                        // al <- top_of_stack :: al <- fp; s -> []
+				ar     +                        // lw al 0(al) :: al = MEMORY[al + 0] to check the AR; s -> []
+				"lw1 "+ entry.getOffset()+"\n";  // lw r1 entry.offset(al) :: r1 <- MEMORY[entry.offset + al]; s -> []
+		
+	}
 
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		ArrayList<SemanticError> output = new ArrayList<SemanticError>();
+		int j=env.getNestingLevel();
+		STentry tmp=null; 
+		while (j>=0 && tmp==null) {
+			tmp=(env.getSymTable().get(j--)).get(id);
+		}
+	    if(tmp==null){
+	    	output.add(new SemanticError("Id "+id+" not declared"));
+	    }else{
+	    	entry = tmp;
+			this.nLevel_id = env.getNestingLevel();
+	    }
+		return output;
+	}
 
-    @Override
-    public Node typeCheck() {
-        
-//        if (entry.getType() instanceof ArrowTypeNode){
-//            System.out.println("Wrong usage of function identifier");
-//            System.exit(0);
-//        }
-        if(entry == null){
-            System.out.println("Variable "+this.id+" not declared");
-            System.exit(0);
-        }
+	public STentry getEntry() {
+		return entry;
+	}
 
-        return entry.getType();
-    }
+	public void setEntry(STentry entry) {
+		this.entry = entry;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public String codeGeneration() {
-//        String getAr="";
-//        for (int i=0; i<nestinglevel - entry.getNestinglevel(); i++) getAr+="lw\n"; //al = MEMORY[fp + offset]
-//        return "push " + entry.getOffset() + "\n" + //si aggiunge l'offset richiesto nello stack 
-//               "lfp\n"+getAr+ //si risale catena statica
-//                "add\n"+ 
-//                "lw"; //si carica nello stack il valore dell'indirizzo ottenuto
-        return null;
-    }
+	public int getnLevel_id() {
+		return nLevel_id;
+	}
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        
-        //return new ArrayList<SemanticError>();
-        ArrayList<SemanticError> res = new ArrayList<SemanticError>();
-
-        int j=env.nestingLevel;
-        STentry tmp=null;
-        while (j>=0 && tmp==null)
-            tmp=(env.symTable.get(j--)).get(this.id);
-        if (tmp==null)
-            res.add(new SemanticError("Variable "+this.id+" not declared"));
-        else entry = tmp;
-        
-        return res;
-    }
-
-    @Override
-    public String Analyze() {
-        return "IdNode: " + this.id + entry.Analyze();
-    }
-
-    public STentry getEntry(){ return this.entry; }
+	public void setnLevel_id(int nLevel_id) {
+		this.nLevel_id = nLevel_id;
+	}
 }

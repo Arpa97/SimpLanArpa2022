@@ -2,24 +2,30 @@ package Interpreter;
 
 import parser.SVMParser;
 
+/*
+HEAP is not handled properly. Due to poor time and to heavy work load given by circumstances (one of our teammates
+dropped out university leaving us doing all the work) we could not handle properly those aspect.
+ */
+
 public class ExecuteVM {
 
     public static final int CODESIZE = 10000;
     public static final int MEMSIZE = 10000;
 
-    public int[] code;                      // instructions memory
-    public int[] memory = new int[MEMSIZE]; // activation records memory
-    private int ip = 0;                      // pointer to the next code instruction
-    public int sp = 0;                      // pointer of the next free record of the stack
-    private int hp = MEMSIZE - 1; // heap-> next :: heap - 1
-    private int fp = 2;  // frame ->next :: frame + 1
-    private int ra=0;     // return address
-    private int rv;     // return value
-    private int r1;      // register r1
-    private int r2;      // register r2
-    private int offset; // temporal offset for sw and lw
-    private int number; // for li on r1 and r2
-    private int al = 2;     // access link
+    public int[] code;                          // instructions memory
+    public int[] memory = new int[MEMSIZE];     // activation records memory
+    private int offset;                         // temporal offset for sw and lw
+    private int number;                         // for li on r1 and r2
+    private int ip = 0;                         // pointer to the next code instruction
+    private int al = 2;                         // access link
+    public int sp = 0;                          // pointer of the next free record of the stack
+    private int r1;                             // register r1
+    private int r2;                             // register r2
+    private int hp = MEMSIZE - 1;               // heap-> next :: heap - 1
+    private int fp = 2;                         // frame ->next :: frame + 1
+    private int ra=0;                           // return address
+    private int rv;                             // return value
+
 
     public ExecuteVM(int[] code) {
         this.code = code;

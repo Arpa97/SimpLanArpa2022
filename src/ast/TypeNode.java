@@ -1,40 +1,37 @@
 package ast;
 
+import java.util.ArrayList;
 import util.Environment;
 import util.SemanticError;
 
-import java.util.ArrayList;
+public class TypeNode implements Node {
+	private String text;
 
-public class TypeNode implements Node{
+	public TypeNode(String text) {
+		this.text = text;
+	}
 
-    private String type;
+	@Override
+	public String printer(String indent) {
+		return indent +"Type " + text ;
+	}
 
-    public TypeNode(String type){
-        this.type = type;
-    }
+	@Override
+	public Node typeCheck() {
+		return null;
+	}
 
-    public String getType() {
-        return type;
-    }
+	@Override
+	public String codeGeneration() {
+		return "";
+	}
 
+	@Override
+	public ArrayList<SemanticError> checkSemantics(Environment env) {
+		return new ArrayList<SemanticError>();
+	}
 
-    @Override
-    public Node typeCheck() {
-        return this;
-    }
-
-    @Override
-    public String codeGeneration() {
-        return "";
-    }
-
-    @Override
-    public ArrayList<SemanticError> checkSemantics(Environment env) {
-        return new ArrayList<SemanticError>();
-    }
-
-    @Override
-    public String Analyze() {
-        return null;
-    }
+	public String getText(){
+		return text;
+	}
 }
